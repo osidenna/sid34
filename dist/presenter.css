@@ -1,0 +1,157 @@
+/* Diaporama sur grand écran (app.js ajoute .is-staged à partir de 760 × 480).
+   Chaque vue est une toile 16:9 de 1280 × 720 px, mise à l'échelle d'un seul facteur :
+   le titre garde la même place et la même taille, le corps est centré dessous en taille
+   de projection, puis réduit (zoom de .slide-fit) seulement s'il déborde.
+   Les règles des téléphones et de l'impression ne sont pas concernées. */
+
+.presentation.is-staged { display: flex; flex-direction: column; overflow: hidden; }
+/* Le focus est gardé sur la présentation pendant la navigation : pas d'anneau autour de la vue. */
+.presentation:focus { outline: none; }
+
+/* Barres discrètes, masquées après 2,5 s sans souris (classe .chrome-idle). */
+.presentation.is-staged .presentation-header { position: relative; flex: none; height: 46px; padding: 6px 20px; border-bottom: 0; background: transparent; transition: opacity .35s ease; }
+.presentation.is-staged .presentation-controls { position: relative; flex: none; height: 54px; padding: 8px 20px; border-top: 0; background: transparent; transition: opacity .35s ease; }
+.presentation.is-staged.chrome-idle .presentation-header,
+.presentation.is-staged.chrome-idle .presentation-controls { opacity: 0; }
+.presentation.is-staged.chrome-idle .presentation-header:has(:focus-visible),
+.presentation.is-staged.chrome-idle .presentation-controls:has(:focus-visible) { opacity: 1; }
+.presentation.is-staged.chrome-idle { cursor: none; }
+.presentation > .presentation-progress { position: fixed; top: auto; bottom: 0; left: 0; z-index: 6; height: 3px; background: #8a4f8c; opacity: .6; transition: width .3s ease; }
+
+/* La toile. */
+.presentation.is-staged .presentation-content { flex: 1 1 auto; min-height: 0; max-width: none; margin: 0; padding: 0; display: grid; place-items: center; overflow: hidden; }
+.presentation.is-staged .presentation-stage { width: 1280px; height: 720px; }
+.presentation.is-staged .slide-panel { position: relative; height: 100%; display: flex; flex-direction: column; margin: 0; padding: 28px 64px 26px; border: 0; background: none; }
+
+/* Titre : toujours en haut à gauche. */
+.presentation.is-staged .slide-panel-header { flex: none; margin: 0 0 24px; }
+.presentation.is-staged .slide-label { font-size: 14px; letter-spacing: .1em; }
+.presentation.is-staged .fresh-badge { font-size: 12px; padding: 2px 9px; }
+.presentation.is-staged .slide-panel-header h2 { margin: 8px 0 0; max-width: 1000px; font-size: 46px; line-height: 1.1; }
+
+/* Corps : centré verticalement sous le titre ; les marges automatiques gardent le haut visible. */
+.presentation.is-staged .slide-body { flex: 1 1 auto; min-height: 0; max-width: none; display: flex; flex-direction: column; overflow: hidden; }
+.presentation.is-staged .slide-fit { width: 100%; margin: auto 0; }
+.presentation.is-staged .slide-fit > :first-child { margin-top: 0; }
+.presentation.is-staged .slide-fit > :last-child { margin-bottom: 0; }
+
+/* Typographie de projection. */
+.presentation.is-staged .slide-body p,
+.presentation.is-staged .slide-body li { font-size: 27px; line-height: 1.45; }
+.presentation.is-staged .slide-body p { margin: 0 0 16px; }
+.presentation.is-staged .slide-body li { margin-bottom: 8px; }
+.presentation.is-staged .slide-body ul { padding-left: 1.2em; }
+.presentation.is-staged .slide-body ol { padding-left: 1.6em; }
+.presentation.is-staged .slide-body .prose p,
+.presentation.is-staged .slide-body .prose ul,
+.presentation.is-staged .slide-body .prose ol { max-width: 1000px; }
+.presentation.is-staged .slide-body .block { margin: 22px 0; }
+.presentation.is-staged .slide-body .block > h2,
+.presentation.is-staged .slide-body .block > h3 { margin: 0 0 10px; font-size: 23px; }
+.presentation.is-staged .formula-block .math { font-size: 32px; }
+.presentation.is-staged .course-table { font-size: 23px; }
+.presentation.is-staged .course-table td,
+.presentation.is-staged .course-table th { padding: 10px 16px 10px 0; }
+.presentation.is-staged .callout p,
+.presentation.is-staged .callout li { font-size: 24px; }
+.presentation.is-staged .exercise .question,
+.presentation.is-staged .exercise .answer,
+.presentation.is-staged .exercise .question p,
+.presentation.is-staged .exercise .question li { font-size: 25px; }
+.presentation.is-staged .source-figure img { max-height: 440px; }
+.presentation.is-staged .figure-pair .figure-open img { height: 340px; }
+.presentation.is-staged .source-figure figcaption { font-size: 16px; }
+.presentation.is-staged .animal-intro svg { max-height: 400px; }
+
+/* Vues denses : un cran plus petit avant toute réduction. */
+.presentation.is-staged .compact-slide .slide-body p,
+.presentation.is-staged .compact-slide .slide-body li { font-size: 23px; }
+.presentation.is-staged .compact-slide .slide-body .block { margin: 16px 0; }
+.presentation.is-staged .compact-slide .formula-block .math { font-size: 27px; }
+.presentation.is-staged .compact-slide .course-table { font-size: 20px; }
+.presentation.is-staged .compact-slide .source-figure img { max-height: 360px; }
+.presentation.is-staged .compact-slide .course-table td,
+.presentation.is-staged .compact-slide .course-table th { padding: 5px 14px 5px 0; }
+
+/* Texte et figure côte à côte. */
+.presentation.is-staged .slide-columns,
+.presentation.is-staged .visual-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.presentation.is-staged .visual-columns .source-figure img { max-height: 470px; object-fit: contain; }
+.presentation.is-staged .slide-columns > .block { grid-column: 1 / -1; }
+.presentation.is-staged .formula-comparison { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; }
+.presentation.is-staged .slide-column > :first-child { margin-top: 0; }
+
+/* Récits des chats et des chiens : texte à gauche, graphique large à droite. */
+.presentation.is-staged .as-classroom { padding: 0; border: 0; background: none; }
+.presentation.is-staged .as-classroom .as-top { position: static; height: 0; margin: 0; }
+.presentation.is-staged .as-classroom .as-top-tools { position: absolute; top: 30px; right: 64px; }
+.presentation.is-staged .as-classroom .as-reset { font-size: 14px; padding: 6px 12px; }
+.presentation.is-staged .as-classroom .as-layout { display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 40px; align-items: center; }
+.presentation.is-staged .as-classroom .as-step p { font-size: 23px; line-height: 1.45; }
+.presentation.is-staged .as-classroom .as-figure { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: center; }
+.presentation.is-staged .as-classroom .as-figure:has(> .as-side .as-table) { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.presentation.is-staged .as-classroom .as-side { max-width: none; }
+.presentation.is-staged .as-classroom .as-figure:has(> .as-side:empty) { grid-template-columns: minmax(0, 1fr); }
+.presentation.is-staged .as-classroom .as-scatter-wrap { width: 100%; max-width: calc(430px * var(--as-ratio, 1.26)); margin: 0 auto; }
+.presentation.is-staged .as-classroom .as-axis-x,
+.presentation.is-staged .as-classroom .as-axis-y { font-size: 15px; }
+.presentation.is-staged .as-classroom .as-side,
+.presentation.is-staged .as-classroom .as-side .as-table { font-size: 16px; }
+.presentation.is-staged .animal-story p.as-side-caption { font-size: 15px !important; }
+.presentation.is-staged .as-classroom .as-table { font-size: 16px; }
+.presentation.is-staged .as-classroom .as-table th,
+.presentation.is-staged .as-classroom .as-table caption { font-size: 14px; }
+.presentation.is-staged .as-classroom .as-table td { padding: 7px 8px 7px 0; }
+.presentation.is-staged .as-classroom .as-bar-row { grid-template-columns: 84px minmax(0, 1fr) 62px; font-size: 16px; }
+.presentation.is-staged .as-classroom .as-bar-track { height: 14px; border-radius: 7px; }
+.presentation.is-staged .as-classroom .as-legend { font-size: 16px; }
+.presentation.is-staged .as-classroom .as-card-row { font-size: 18px; }
+.presentation.is-staged .as-classroom .as-card-row small,
+.presentation.is-staged .as-classroom .as-trio small { font-size: 13px; }
+.presentation.is-staged .animal-story p.as-card-note { font-size: 14px !important; }
+.presentation.is-staged .as-classroom .as-readout { margin-top: 12px; padding: 10px 16px; }
+.presentation.is-staged .as-classroom .as-readout > strong { font-size: 22px; }
+.presentation.is-staged .as-classroom .as-readout > span { font-size: 16px; }
+.presentation.is-staged .as-classroom .as-controls { margin-top: 10px; }
+.presentation.is-staged .as-classroom .as-question,
+.presentation.is-staged .as-classroom .as-theory { font-size: 17px; }
+.presentation.is-staged .as-classroom .as-question p,
+.presentation.is-staged .as-classroom .mascot-note p { font-size: 19px !important; }
+.presentation.is-staged .classroom-formula .math { font-size: 25px; }
+.presentation.is-staged .classroom-formula p { font-size: 17px !important; }
+
+/* Récit SVM de l'an dernier. */
+.presentation.is-staged .svm-story-grid { grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: center; }
+.presentation.is-staged .svm-step p { font-size: 23px !important; }
+.presentation.is-staged .story-math { font-size: 24px; }
+.presentation.is-staged .svm-canvas svg { max-height: 440px; }
+.presentation.is-staged .svm-readout { font-size: 17px; }
+
+/* Démonstrations interactives (« Tout le support ») : graphique plafonné, commandes lisibles. */
+.presentation.is-staged .demo-host { margin: 0; }
+.presentation.is-staged .demo-shell { grid-template-columns: minmax(0, 1fr) 300px; }
+.presentation.is-staged .demo-plot { padding: 10px 14px 0; }
+.presentation.is-staged .demo-plot svg { display: block; width: 100%; height: auto; max-height: 360px; }
+.presentation.is-staged .demo-controls { gap: 14px; max-height: 400px; padding: 18px; overflow-y: auto; }
+.presentation.is-staged .control,
+.presentation.is-staged .demo-check { font-size: 16px; }
+.presentation.is-staged .demo-controls .primary-button,
+.presentation.is-staged .demo-controls .secondary-button { font-size: 15px; }
+.presentation.is-staged .experiment-formula .math { font-size: 18px; }
+.presentation.is-staged .experiment-formula p { display: none; }
+.presentation.is-staged .demo-legend { padding: 6px 14px 10px; font-size: 15px; }
+.presentation.is-staged .demo-stats { padding: 10px 20px; }
+.presentation.is-staged .stat { font-size: 14px; }
+.presentation.is-staged .stat strong { font-size: 26px; }
+.presentation.is-staged .demo-note,
+.presentation.is-staged .demo-caption { padding: 10px 20px; font-size: 15px !important; }
+
+/* Téléphone (pas de toile) : « Réinitialiser » sous le titre, au lieu de le recouvrir. */
+.presentation:not(.is-staged) .as-classroom .as-top { position: static; display: flex; justify-content: flex-end; height: auto; margin: 0 0 8px; }
+.presentation:not(.is-staged) .as-classroom .as-top-tools { position: static; }
+
+@media (prefers-reduced-motion: reduce) {
+  .presentation.is-staged .presentation-header,
+  .presentation.is-staged .presentation-controls,
+  .presentation > .presentation-progress { transition: none; }
+}

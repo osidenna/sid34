@@ -1,0 +1,186 @@
+/* Full course notes have their own pagination; landscape classroom slides retain
+   the existing fixed-page stylesheet. Load after style.css and animal-stories.css. */
+@page sid34-notes {
+  size: A4 portrait;
+  margin: 14mm 14mm 17mm;
+}
+
+@media print {
+  body[data-print-mode="notes"] {
+    margin: 0;
+    font: 11pt/1.5 var(--sans);
+  }
+
+  .print-root.print-notes {
+    page: sid34-notes;
+    width: 182mm;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-notes .print-page {
+    page: sid34-notes;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0 0 15pt;
+    padding: 0;
+    overflow: visible;
+    break-before: auto;
+    break-after: auto;
+    break-inside: auto;
+  }
+
+  .print-notes .print-page-inner,
+  .print-notes .print-slide-inner {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    transform: none !important;
+    zoom: 1 !important;
+  }
+
+  .print-notes .print-cover {
+    min-height: 250mm;
+    break-after: page;
+    break-inside: avoid;
+  }
+  .print-notes .print-cover .print-page-inner,
+  .print-notes .print-cover .print-slide-inner { padding: 12mm 0; }
+  .print-notes .print-cover h1 { font-size: 29pt; line-height: 1.2; }
+  .print-notes .print-cover p { font-size: 11pt; }
+  .print-notes .print-cover ol { font-size: 11pt; line-height: 1.7; }
+
+  .print-notes .print-context {
+    margin: 0 0 5pt;
+    font-size: 9pt;
+    break-after: avoid;
+  }
+  .print-notes .slide-panel-header { margin-bottom: 9pt; break-inside: avoid; break-after: avoid; }
+  .print-notes .slide-panel-header h2 { font-size: 18pt; line-height: 1.25; }
+  .print-notes :is(h1, h2, h3, h4, summary) { break-after: avoid; }
+  .print-notes .slide-body .block > :is(h2, h3) { font-size: 12pt; margin: 0 0 6pt; }
+  .print-notes .slide-body :is(p, li) { font-size: 11pt !important; line-height: 1.5 !important; orphans: 3; widows: 3; }
+  .print-notes .slide-body p { margin: 0 0 7pt; }
+  .print-notes .slide-body .block { margin: 10pt 0; break-inside: auto; }
+  .print-notes .slide-body .block:is(.formula-block, .figure, .figures, .table, .callout, .exercise),
+  .print-notes :is(figure, table, .formula-note, .clarification) { break-inside: avoid; }
+  .print-notes .slide-columns,
+  .print-notes .formula-comparison,
+  .print-notes .print-comparison { display: block; }
+  .print-notes .slide-columns > *,
+  .print-notes .formula-comparison > *,
+  .print-notes .print-comparison > * { width: 100%; min-width: 0; margin-bottom: 10pt; }
+  .print-notes .print-comparison > * { break-inside: avoid; }
+
+  .print-notes :is(.formula-note, .clarification, .frame-note) { display: block !important; }
+  .print-notes .formula-block { padding: 4pt 0; }
+  .print-notes .formula-block .math,
+  .print-notes .as-theory .math-display,
+  .print-notes .story-math,
+  .print-notes .regression-math { font-size: 11.5pt; overflow: visible !important; }
+  .print-notes .math-display,
+  .print-notes .katex-display { max-width: 100%; overflow: visible !important; break-inside: avoid; }
+  .print-notes .formula-note { font-size: 10.5pt; line-height: 1.5; margin-top: 5pt; }
+  .print-notes .clarification { margin: 8pt 0; }
+
+  .print-notes .course-table,
+  .print-notes .as-table { width: 100%; font-size: 10pt; table-layout: auto; }
+  .print-notes .slide-body .block.table { overflow: visible !important; }
+  .print-notes :is(th, td) { padding: 5pt 6pt; font-size: 10pt; vertical-align: top; overflow-wrap: normal; word-break: normal; }
+  .print-notes thead { display: table-header-group; }
+  .print-notes tr { break-inside: avoid; }
+  .print-notes .glossary-table td:first-child { white-space: normal; }
+
+  .print-notes .source-figure img,
+  .print-notes .slide-body > .figure:only-child img {
+    width: auto;
+    max-width: 100%;
+    max-height: 125mm;
+    height: auto;
+    object-fit: contain;
+  }
+  .print-notes .figure-pair { display: block; }
+  .print-notes .source-figure { margin: 0 auto 8pt; break-inside: avoid; }
+  .print-notes .source-figure figcaption { margin-top: 6pt; font-size: 9.5pt; line-height: 1.45; }
+  .print-notes .figure-label { font-size: 10pt; }
+
+  /* Charts and their immediate labels stay together. The explanatory paragraphs
+     then use the whole text width and can flow naturally to the following page. */
+  .print-notes :is(.animal-story, .svm-story, .regression-story, .split-story) {
+    padding: 0;
+    border: 0;
+    break-inside: auto;
+  }
+  .print-root.print-notes .animal-story .as-layout,
+  .print-notes :is(.svm-story-grid, .regression-layout, .split-layout) {
+    display: block !important;
+  }
+  .print-notes :is(.as-sticky, .svm-sticky, .regression-figure, .split-sticky) {
+    order: 0;
+    position: static !important;
+    width: 100%;
+    max-height: none !important;
+    margin: 0;
+    overflow: visible !important;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .print-notes :is(.as-steps, .svm-steps, .regression-steps, .split-steps) {
+    order: 1;
+    width: 100%;
+    min-width: 0;
+    break-inside: auto;
+  }
+  .print-root.print-notes .animal-story .as-figure {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) !important;
+    gap: 12pt;
+    align-items: start;
+    break-inside: avoid;
+  }
+  .print-root.print-notes .animal-story .as-scatter-wrap { width: 100%; max-width: none; }
+  .print-root.print-notes .animal-story .as-figure:has(table) { display: block !important; }
+  .print-root.print-notes .animal-story .as-figure:has(table) .as-scatter-wrap {
+    max-width: 95mm;
+    margin: 0 auto 10pt;
+    break-inside: avoid;
+  }
+  .print-root.print-notes .animal-story .as-figure:has(table) .as-side {
+    width: 100%;
+    max-width: none !important;
+    break-inside: avoid;
+  }
+  .print-root.print-notes .animal-story .as-sticky:has(table),
+  .print-root.print-notes .animal-story .as-figure:has(table) { break-inside: auto; }
+  .print-notes .as-side { min-width: 0; }
+  .print-notes .as-side-figure { width: 100%; max-width: 250px; margin: 0 auto; }
+  .print-notes :is(.as-readout, .svm-readout, .regression-readout, .split-readout) {
+    font-size: 10.5pt;
+    line-height: 1.5;
+    min-height: 0;
+    padding: 6pt 8pt;
+  }
+  .print-notes .as-readout > :is(strong, span) { font-size: 10.5pt; }
+  .print-notes .as-theory { width: 100%; margin: 8pt 0; padding-top: 5pt; break-inside: auto; }
+  .print-notes .as-theory > summary { display: block; font-size: 10.5pt; font-weight: 600; margin-bottom: 5pt; }
+  .print-notes :is(.as-footnote, .story-footnote) { display: block !important; margin: 8pt 0; font-size: 9.5pt !important; }
+  .print-notes .as-footnote > summary { display: none; }
+  .print-notes .as-question,
+  .print-notes .story-question { display: block !important; font-size: 10.5pt; break-inside: avoid; }
+  .print-notes .as-question > summary { font-size: 10.5pt; }
+  .print-notes .legacy-pinned-result { display: none; }
+  .print-notes :is(.svm-canvas, .regression-canvas, .split-figure) svg { max-height: 100mm; }
+  .print-notes :is(.svm-legend, .regression-legend, .split-legend, .as-legend) { font-size: 9.5pt; }
+  .print-notes .as-label { font-size: 11px; }
+  .print-notes .as-axis-x,
+  .print-notes .as-axis-y { font-size: 10pt; }
+  .print-notes .demo-shell { break-inside: avoid; }
+  .print-notes .demo-plot svg { max-height: 100mm; }
+  .print-notes .references a { font-size: 10pt; overflow-wrap: anywhere; }
+}

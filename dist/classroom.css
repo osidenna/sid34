@@ -1,0 +1,54 @@
+/* Readable inactive steps: emphasis comes from the active marker, not faded text. */
+.as-scrolly .as-step, .split-scrolly .split-step,
+.regression-scroll .regression-step, .scroll-story .svm-step { opacity: 1; }
+.as-scrolly .as-step.active > .as-step-number,
+.split-scrolly .split-step.active > .split-step-number,
+.regression-scroll .regression-step.active > .regression-step-number,
+.scroll-story .svm-step.active > .step-number { color: var(--blue); }
+.as-scrolly .as-step.active > h3,
+.split-scrolly .split-step.active > h3,
+.regression-scroll .regression-step.active > h3,
+.scroll-story .svm-step.active > h3 { text-decoration: underline; text-decoration-color: var(--marker); text-underline-offset: 7px; text-decoration-thickness: 3px; }
+.plan-lessons a { grid-template-columns: minmax(0,1fr) auto; gap: 16px; }
+.plan-title { grid-column: 1; }
+.plan-tags { display: block; grid-column: 2; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.lesson-outcome { font-size: 15px; margin: 18px 0; }
+.lesson-outcome strong { font-weight: 600; margin-right: 7px; }
+.exit-question { margin: 20px 0 28px; padding: 12px 0; border-top: 1px solid var(--line); }
+.exit-question summary { cursor: pointer; font-size: 15px; font-weight: 600; }
+.exit-question p { margin: 16px 0 0; }
+.figure-reference { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.figure-reference summary { cursor: pointer; }
+.figure-reference a { display: block; margin-top: 8px; }
+.classroom-formula { padding-top: 12px; border-top: 1px solid var(--line); }
+.classroom-formula .math { font-size: 19px; overflow-x: auto; }
+.classroom-formula p { font-size: 15px !important; line-height: 1.4; margin-top: 8px; }
+.presentation-content .slide-label { color: #596170; }
+.presentation-content .focused-panel .slide-body { max-width: 1000px; }
+.presentation-content .focused-panel .formula-block .math { font-size: 25px; }
+.presentation-content .focused-panel .course-table { font-size: 21px; }
+.presentation-content { padding-bottom: 96px; }
+.presentation-content .as-classroom .as-layout { grid-template-columns: minmax(300px, .8fr) minmax(0,1.6fr); }
+.presentation-content .as-classroom { padding: 0; }
+.presentation-content .as-classroom .as-top { position: relative; margin: 0; height: 0; }
+.presentation-content .as-classroom .as-top-tools { position: absolute; right: 0; top: -48px; }
+.presentation-content .as-classroom .as-reset { font-size: 12px; padding: 4px 8px; }
+.presentation-content .as-classroom .as-readout { margin-top: 6px; padding: 6px 10px; }
+.presentation-content .as-classroom .as-controls { margin-top: 6px; }
+.presentation-content .logistic-story .as-readout > span:first-of-type { display: none; }
+.presentation-content .animal-intro svg { max-height: 280px; }
+.presentation-content [data-slide-id="geometrie-4"] .source-figure img { max-height: 250px; }
+.presentation-content .as-classroom .as-question,
+.presentation-content .as-classroom .as-theory { font-size: 14px; }
+@media (max-width:600px) {
+  .plan-lessons a { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+  .plan-tags { grid-column: 1; white-space: normal; }
+  .lesson-outcome { font-size: 14px; line-height: 1.5; }
+  .lesson-meta .tools { gap: 6px 12px; }
+}
+@media print {
+  .figure-reference { display: none; }
+  .classroom-formula .math { overflow: visible; font-size: 13pt; }
+  .classroom-formula p { font-size: 10pt !important; }
+  .print-slides details, .print-slides .as-footnote, .print-slides .story-footnote { display: none !important; }
+}
