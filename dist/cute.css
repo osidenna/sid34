@@ -212,3 +212,5 @@
 .plan-chapter.is-soon .plan-chapter-head { padding: 6px 0; }
 .plan-chapter.is-soon h2 { font-size: 22px; }
 .chapter-nav.is-soon .chapter-nav-title::after, .chapter-nav.is-soon .chapter-nav-title::before { content: none; display: none; }
+/* Les lectures des récits défilent horizontalement, ce qui coupe verticalement : de la place pour les fractions. */
+.as-readout > strong { padding: .25em 0; }
