@@ -214,3 +214,12 @@
 .chapter-nav.is-soon .chapter-nav-title::after, .chapter-nav.is-soon .chapter-nav-title::before { content: none; display: none; }
 /* Les lectures des récits défilent horizontalement, ce qui coupe verticalement : de la place pour les fractions. */
 .as-readout > strong { padding: .25em 0; }
+
+/* Récits au défilement (deux colonnes) : la colonne du graphique reste fixée jusqu'à la dernière
+   étape. 1) La dernière étape fait au moins la hauteur de l'écran, sinon la colonne « collante »
+   est relâchée et remonte avant la fin. 2) Le graphique est réduit en largeur (proportions
+   conservées, superpositions alignées) pour que la colonne tienne dans l'écran. */
+@media screen and (min-width: 961px) {
+  .as-scrolly .as-step:last-child { min-height: calc(100vh - 16px); }
+  .as-scrolly .as-plot { max-width: max(260px, calc((100vh - 320px) * 1.26)); margin-inline: auto; }
+}

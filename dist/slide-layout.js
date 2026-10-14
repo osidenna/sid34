@@ -28,7 +28,7 @@
   const redrawnAlts = {
     rec:'Six chiffres manuscrits avec leurs étiquettes 9, 6, 6, 5, 4 et 0 ; la dernière image est encadrée comme entrée xᵢ, son étiquette 0 comme sortie yᵢ.',
     regression:'Illustration synthétique : courbe de moyenne conditionnelle, observations dispersées et plusieurs sorties possibles à la même entrée x₀ = 4 ; le point sur la courbe marque la moyenne conditionnelle −0,08.',
-    lossff:'Comparaison de la demi-perte quadratique et de la perte charnière appliquée au score continu g, pour les labels −1 et +1.',
+    lossff:'Trois pertes : la demi-perte quadratique, parabole centrée sur y ; la perte logistique pour y = 0 et y = 1 ; la perte charnière pour y = −1 et y = +1, en fonction du score g.',
     ols:'Illustration schématique : observations, droite de prévision et carrés représentant les résidus verticaux au carré.',
     jackpot:'Deux cibles comparant des impacts centrés en moyenne et des impacts systématiquement décalés : biais faible et biais élevé.',
     jacknot:'Deux cibles comparant des impacts groupés et dispersés : variance faible et variance élevée.',
@@ -105,7 +105,7 @@
       for (const block of lesson.blocks) {
         if (block.title?.includes('SID34')) block.title=block.title.replace('SID34','du cours');
         const items = block.type==='figure' ? [block] : block.type==='figures' ? block.items : [];
-        for(const item of items){const name=item.src?.split('/').pop()?.replace('.png',''); if(redrawn.has(name)){item.originalSrc=item.src;item.src='assets/redrawn/'+name+'.svg';item.redrawn=true; item.alt=redrawnAlts[name]; if(name==='lossff') item.caption='Demi-perte quadratique en régression et perte charnière appliquée au score continu \\(g\\) du SVM.'; if(name==='ols') item.caption='Schéma illustratif redessiné : chaque carré représente le carré d’un résidu vertical.'; if(name==='hyperp') item.caption='Même exemple du cours : \\(A=(3,4)\\), normale \\(w=(2,1)\\), distance à l’hyperplan \\(2\\sqrt5\\).'; if(name==='categ'||name==='here') item.caption='Carte redessinée d’après le support et The Illustrated Machine Learning (2023), avec les définitions précisées.';}}
+        for(const item of items){const name=item.src?.split('/').pop()?.replace('.png',''); if(redrawn.has(name)){item.originalSrc=item.src;item.src='assets/redrawn/'+name+'.svg';item.redrawn=true; item.alt=redrawnAlts[name]; if(name==='lossff') item.caption='Demi-perte quadratique en régression ; pertes logistique et charnière en fonction du score continu \\(g\\).'; if(name==='ols') item.caption='Schéma illustratif redessiné : chaque carré représente le carré d’un résidu vertical.'; if(name==='hyperp') item.caption='Même exemple du cours : \\(A=(3,4)\\), normale \\(w=(2,1)\\), distance à l’hyperplan \\(2\\sqrt5\\).'; if(name==='categ'||name==='here') item.caption='Carte redessinée d’après le support et The Illustrated Machine Learning (2023), avec les définitions précisées.';}}
         for (const item of items) if (item.src === 'assets/redrawn/regression.svg') item.caption = 'Illustration synthétique redessinée : à \\(x_0=4\\), plusieurs sorties sont possibles. La courbe mauve représente \\(m^{*}(x)=\\mathbb{E}[Y\\mid X=x]\\), optimale sous perte quadratique.';
         for (const item of items) {
           if(item.src==='assets/redrawn/trade.svg'){
