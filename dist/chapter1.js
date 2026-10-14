@@ -216,7 +216,7 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "prose",
           "title": "Vocabulaire",
-          "html": "<ul><li>Sortie <strong>quantitative</strong> : <strong>régression</strong>.</li><li>Sortie qualitative (classes en nombre fini) : <strong>discrimination</strong> ou <strong>classification supervisée</strong>.</li></ul><p>Entrées de toute nature ; c’est la <strong>sortie</strong> qui décide.</p>"
+          "html": "<ul><li>Sortie <strong>quantitative</strong> : <strong>régression</strong>.</li><li>Sortie <strong>qualitative</strong> (classes en nombre fini) : <strong>discrimination</strong> ou <strong>classification supervisée</strong>.</li></ul><p>Entrées de toute nature ; c’est la <strong>sortie</strong> qui décide.</p>"
         },
         {
           "type": "table",
