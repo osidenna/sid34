@@ -97,9 +97,9 @@ window.SID34_CHAPTER_1 = {
               "Relier produits ou événements."
             ],
             [
-              "Les deux",
+              "Non supervisé",
               "Systèmes de recommandation",
-              "Prédire une note (supervisé) ou suggérer des produits souvent associés (non supervisé)."
+              "Compléter une matrice de notes ou suggérer des produits souvent associés."
             ]
           ]
         },
@@ -181,7 +181,7 @@ window.SID34_CHAPTER_1 = {
           "type": "exercise",
           "title": "Le prix Netflix · question du cours",
           "question": "<p><strong>S’agit-il d’un problème supervisé ou non supervisé ?</strong> Identifier les entrées, la sortie et les exemples observés.</p>",
-          "answer": "<p>Tâche <strong>supervisée</strong> : chaque note connue est une sortie observée pour un couple client–film. Entrées : client et film ; sortie : note numérique (régression). Les couples sans note ne la rendent pas non supervisée.</p>"
+          "answer": "<p><strong>Non supervisé</strong> : aucune variable de sortie n’est distincte des entrées. Toutes les cases sont des notes de même nature ; on complète la matrice clients × films en exploitant sa structure (<strong>complétion de matrice</strong>).</p><p>Observations : les notes connues. À prédire : les cases vides.</p>"
         },
         {
           "type": "callout",

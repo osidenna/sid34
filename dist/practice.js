@@ -45,15 +45,15 @@
     ]},
     {id: 'netflix', match: 'supervisé ou non supervisé', steps: [
       {kind: 'choice', prompt: 'Prédire les notes manquantes de Netflix, c’est…', choices: [
-        {t: 'un problème supervisé : chaque note connue est une sortie observée', ok: true},
-        {t: 'un problème non supervisé : 99 % des cases sont vides', why: 'Les cases vides sont les notes à prédire. Les 100 millions de notes connues sont des sorties observées : la tâche est supervisée.'},
-        {t: 'ni l’un ni l’autre : il n’y a pas d’entrées', why: 'Les entrées existent : le couple client–film.'}],
-        ok: 'Entrées : le client et le film. Sortie : la note. Exemples observés : les notes connues.'},
-      {kind: 'choice', prompt: 'La note étant traitée comme un nombre, quelle est la nature de la tâche ?', choices: [
-        {t: 'une régression', ok: true},
-        {t: 'une discrimination binaire', why: 'La note va de 1 à 5 et l’erreur se mesure sur sa valeur numérique : c’est une régression.'},
-        {t: 'un clustering', why: 'Le clustering regroupe sans sortie observée ; ici on prédit une note observée.'}],
-        ok: 'On prédit une valeur numérique : c’est une régression.'}
+        {t: 'un problème non supervisé : on complète une matrice de notes', ok: true},
+        {t: 'un problème supervisé : chaque note connue est une sortie observée', why: 'Aucune variable de sortie n’est séparée des entrées : toutes les cases sont des notes de même nature. On complète la matrice à partir de sa structure.'},
+        {t: 'ni l’un ni l’autre : il n’y a pas de données', why: 'Les données sont les notes connues de la matrice clients × films.'}],
+        ok: 'Pas de sortie distincte des entrées : on complète la matrice clients × films (complétion de matrice).'},
+      {kind: 'choice', prompt: 'Comment prédire une case vide ?', choices: [
+        {t: 'à partir des notes connues de clients et de films semblables', ok: true},
+        {t: 'par la moyenne de toutes les notes', why: 'C’est une première référence, mais elle ignore les différences entre clients et entre films.'},
+        {t: 'c’est impossible : 99 % des cases sont vides', why: 'Le 1 % de notes connues, réparti sur des centaines de milliers de clients et de films, suffit à exploiter la structure de la matrice.'}],
+        ok: 'Des clients aux goûts proches notent de façon proche : la structure de la matrice permet de compléter les cases vides.'}
     ]},
     {id: 'vecteur-normal', match: 'w=(2,-1)', steps: [
       {kind: 'number', prompt: String.raw`Avec \(g(x)=2x_1-x_2\), calculez le score de \((1,1)\).`, answer: 1, tol: 0.001,
