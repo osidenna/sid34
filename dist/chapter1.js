@@ -99,7 +99,7 @@ window.SID34_CHAPTER_1 = {
             [
               "Les deux",
               "Systèmes de recommandation",
-              "Prédire une note (supervisé, prix Netflix) ou suggérer des produits souvent associés (non supervisé)."
+              "Prédire une note (supervisé) ou suggérer des produits souvent associés (non supervisé)."
             ]
           ]
         },
