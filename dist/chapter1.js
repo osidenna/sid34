@@ -262,18 +262,23 @@ window.SID34_CHAPTER_1 = {
           "type": "table",
           "headers": [
             "Modèle",
-            "Fonction de prévision",
+            "Prévision à partir du score \\(g(x)=w^{\\top}x+b\\)",
             "Paramètres"
           ],
           "rows": [
             [
               "Régression linéaire",
-              "\\(\\hat y=w^{\\top}x+b\\)",
+              "\\(\\hat y=g(x)\\)",
+              "\\(\\theta=(w,b)\\)"
+            ],
+            [
+              "Régression logistique (chapitre 2)",
+              "\\(\\hat p=\\sigma(g(x))\\), \\(\\hat y=\\mathbf{1}_{\\{\\hat p\\ge t\\}}\\)",
               "\\(\\theta=(w,b)\\)"
             ],
             [
               "SVM binaire",
-              "\\(\\hat y=\\operatorname{sign}(g(x)),\\quad g(x)=w^{\\top}x+b\\) ; score nul : \\(+1\\).",
+              "\\(\\hat y=\\operatorname{sign}(g(x))\\) ; score nul : \\(+1\\).",
               "\\(\\theta=(w,b)\\)"
             ]
           ]
