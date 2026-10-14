@@ -3,7 +3,8 @@
   const specs = {
     fondements: {
       'introduction-generale': [
-        ['Vue d’ensemble du cours',[0]], ['Plan du cours',[1]], ['Contexte',[3]], ['Deux approches',[4,5]],
+        // Masquées (demande de l'enseignante) : identifiants réservés, ni affichées ni numérotées.
+        ['Vue d’ensemble du cours',[0],{hidden:true}], ['Plan du cours',[1],{hidden:true}], ['Contexte',[3]], ['Deux approches',[4,5]],
         ['Apprentissage statistique et machine learning',[6]], ['Problématiques associées à l’apprentissage',[7]],
         ['Notations et significations',[8,9]], ['Problème d’apprentissage supervisé',[10]], ['Apprentissage non supervisé',[11]], ['Le prix Netflix',[12,15,13,14]]
       ],
@@ -59,10 +60,10 @@
         const index = options.id ? null : position++;
         const blocks = indices.map(i => original[chapter.id==='fondements'&&lesson.id==='introduction-generale'&&i>=3?i-1:i]);
         if (blocks.some(b=>!b)) throw new Error('Missing slide block: '+lesson.id);
-        const slide = {title,blocks,extra:!!options.extra,fresh:!!options.fresh,open:!!options.open,id:options.id||lesson.id+'-'+(options.fresh?'n':'')+(index+1),number: options.extra || options.fresh ? null : ++originalNumber};
+        const slide = {title,blocks,extra:!!options.extra,fresh:!!options.fresh,open:!!options.open,id:options.id||lesson.id+'-'+(options.fresh?'n':'')+(index+1),number: options.extra || options.fresh || options.hidden ? null : ++originalNumber, hidden: !!options.hidden};
         if (options.columns) slide.presentationColumns = options.columns.map(column=>column.map(i=>original[i]));
         return slide;
-      });
+      }).filter(slide => !slide.hidden);
       if(chapter.id==='lineaires'&&lesson.id==='hard-soft'){
         original[1].optionalNote='Tableau de comparaison';
         original[2].title='Hard margin'; original[2].tex=original[2].tex.replace(String.raw`\text{Hard margin SVM :}\quad&`, '&');
@@ -124,5 +125,5 @@
   }
   const first=window.SID34_CHAPTER_1.lessons[0];
   first.intro=first.intro.replace('Motivation, ','');
-  first.blocks.find(b=>b.title==='Plan du cours').html=first.blocks.find(b=>b.title==='Plan du cours').html.replace('motivation, ','');
+  const coursePlan=first.blocks.find(b=>b.title==='Plan du cours'); if(coursePlan) coursePlan.html=coursePlan.html.replace('motivation, ','');
 })();
