@@ -474,10 +474,10 @@
           {t: 'ne change pas', ok: true},
           {t: 'change beaucoup', why: String.raw`Un animal sans multiplicateur actif n’a aucun poids dans \(w\).`}],
         answer: String.raw`Un animal hors de la marge garde \(\alpha_i=0\) : ni \(w\) ni \(b\) ne changent. Essayez en déplaçant un animal loin de la frontière.`},
-      {title: 'α est borné par C', slideTitle: '\\(\\alpha_i\\) est borné par \\(C\\)', html: String.raw`<p>En marge souple, \(0\le\alpha_i\le C\).</p><p>\(0<\alpha_i<C\) : sur un bord. \(\alpha_i=C\) (en brique) : dans la marge ou mal classé.</p>`,
+      {title: 'α est borné par C', slideTitle: '\\(\\alpha_i\\) est borné par \\(C\\)', html: String.raw`<p>En marge souple, \(0\le\alpha_i\le C\).</p><p>\(0&lt;\alpha_i&lt;C\) : sur un bord. \(\alpha_i=C\) (en brique) : dans la marge ou mal classé.</p>`,
         prompt: String.raw`Un animal a \(\alpha_i=C\). Il est…`,
         choices: [
-          {t: 'sur le bord de la marge', why: String.raw`Sur le bord, en général \(0<\alpha_i<C\).`},
+          {t: 'sur le bord de la marge', why: String.raw`Sur le bord, en général \(0&lt;\alpha_i&lt;C\).`},
           {t: 'loin de la frontière', why: String.raw`Loin de la frontière, hors de la marge : \(\alpha_i=0\).`},
           {t: 'dans la marge ou du mauvais côté', ok: true}],
         answer: String.raw`Si \(\alpha_i=C\), les conditions KKT donnent \(y_i\,g(x_i)\le1\) : l’animal ne respecte pas strictement la marge. Ici, ce sont les animaux dans la marge ou mal classés.`}
@@ -511,7 +511,7 @@
           '<p class="as-side-caption">\\(\\sum_i\\alpha_i y_i x_i=(' + tx(ws.w1) + '\\,;\\,' + tx(ws.w2) + ')=w\\)</p>' + goal(moved && same, moved && same ? '\\(w\\) et \\(b\\) inchangés : l’animal déplacé n’est pas un support.' : (moved ? 'La frontière a bougé (pointillés : l’ancienne) : cet animal est un support. ' : '') + 'Déplacez un animal sans faire bouger la frontière.', 'dual-support');
         ctx.readout.innerHTML = '<strong>\\(w=(' + tx(m.w1) + '\\,;\\,' + tx(m.w2) + ')\\), \\(b=' + tx(m.b) + '\\)</strong><span>' + nsv + ' vecteurs de support. Réinitialiser remet les animaux en place.</span>';
       }
-      if (st === 2) { ctx.side.innerHTML = alphaFig(m, pts, C) + '<div class="as-legend">' + legendRow(COL.error, '\\(\\alpha_i=C\\)') + legendRow(COL.cat, '\\(0<\\alpha_i<C\\)') + '</div>'; ctx.readout.innerHTML = '<strong>\\(C=' + String(C).replace('.', '{,}') + '\\) : ' + atC.filter(Boolean).length + ' animaux avec \\(\\alpha_i=C\\), ' + (nsv - atC.filter(Boolean).length) + ' avec \\(0<\\alpha_i<C\\)</strong><span>\\(\\sum_i\\alpha_i y_i=' + tx(pts.reduce((t, a, i) => t + m.alpha[i] * ypm(a), 0), 3) + '\\), comme l’exige le dual.</span>'; }
+      if (st === 2) { ctx.side.innerHTML = alphaFig(m, pts, C) + '<div class="as-legend">' + legendRow(COL.error, '\\(\\alpha_i=C\\)') + legendRow(COL.cat, '\\(0&lt;\\alpha_i&lt;C\\)') + '</div>'; ctx.readout.innerHTML = '<strong>\\(C=' + String(C).replace('.', '{,}') + '\\) : ' + atC.filter(Boolean).length + ' animaux avec \\(\\alpha_i=C\\), ' + (nsv - atC.filter(Boolean).length) + ' avec \\(0&lt;\\alpha_i&lt;C\\)</strong><span>\\(\\sum_i\\alpha_i y_i=' + tx(pts.reduce((t, a, i) => t + m.alpha[i] * ypm(a), 0), 3) + '\\), comme l’exige le dual.</span>'; }
     }
   };
 

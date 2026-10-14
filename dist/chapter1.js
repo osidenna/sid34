@@ -9,7 +9,7 @@ window.SID34_CHAPTER_1 = {
       "id": "introduction-generale",
       "title": "Introduction générale",
       "duration": 20,
-      "intro": "Contexte, problématiques et notations : situer l’apprentissage statistique avant de construire son cadre mathématique.",
+      "intro": "Contexte, problématiques et notations, avant le cadre mathématique.",
       "objective": "Distinguer les objectifs et les cadres d’apprentissage, puis reconnaître les objets et les notations du cours.",
       "blocks": [
         {
@@ -45,51 +45,61 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "prose",
           "title": "Plan du cours",
-          "html": "<ol><li><strong>Introduction générale :</strong> contexte, problématiques et vocabulaire.</li><li><strong>Cadre mathématique de l’apprentissage statistique supervisé :</strong> régression et discrimination, perte, risque, décomposition de l’erreur et estimation du risque.</li><li><strong>Catégorisation :</strong> organiser les méthodes et comprendre la progression du cours.</li></ol>"
+          "html": "<ol><li><strong>Introduction générale :</strong> contexte, vocabulaire.</li><li><strong>Cadre mathématique de l’apprentissage statistique supervisé :</strong> perte, risque, biais–variance, estimation du risque.</li><li><strong>Catégorisation :</strong> organiser les méthodes.</li></ol>"
         },
         {
           "type": "prose",
           "title": "Contexte",
-          "html": "<p>L’<strong>apprentissage statistique</strong> (<em>statistical learning</em>) étudie comment estimer des dépendances à partir d’un ensemble de données et comment modéliser ou comprendre des jeux de données complexes.</p><blockquote><p>« … explores way of estimating functional dependency from a given collection of data » — Vapnik, 2000.</p><p>« … a set of tools for modelling and understanding complex datasets » — James et al., 2013.</p></blockquote>"
+          "html": "<p>L’<strong>apprentissage statistique</strong> (<em>statistical learning</em>) : estimer des dépendances, modéliser et comprendre des données complexes.</p><blockquote><p>« … explores way of estimating functional dependency from a given collection of data » — Vapnik, 2000.</p><p>« … a set of tools for modelling and understanding complex datasets » — James et al., 2013.</p></blockquote>"
         },
         {
           "type": "prose",
           "title": "Deux approches",
-          "html": "<p>Selon l’objectif, on peut privilégier un <strong>modèle interprétable</strong>, avec une complexité maîtrisée, ou une <strong>bonne précision prédictive</strong>, quitte à employer un modèle plus complexe.</p><p>Ces perspectives sont complémentaires : l’interprétation des modèles peut s’appuyer sur des scores d’importance des variables, et un algorithme de prévision doit aussi être étudié à travers ses propriétés statistiques — biais, variance, convergence.</p>"
+          "html": "<ul><li>Un <strong>modèle interprétable</strong> : complexité maîtrisée.</li><li>Une <strong>bonne précision prédictive</strong> : modèle plus complexe si besoin.</li></ul><p>Approches complémentaires : importance des variables pour interpréter ; biais, variance, convergence pour étudier un prédicteur.</p>"
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>Bien expliquer une relation ne garantit pas, à lui seul, une bonne prédiction sur de nouvelles données. L’explication et la prévision sont des objectifs complémentaires dont la qualité doit être évaluée séparément.</p>"
+          "html": "<p>Bien expliquer ne garantit pas de bien prédire de nouvelles données : évaluer les deux séparément.</p>"
         },
         {
           "type": "prose",
           "title": "Apprentissage Statistique vs Machine Learning",
-          "html": "<p>Le <strong>machine learning</strong> s’est développé au sein de l’intelligence artificielle ; l’<strong>apprentissage statistique</strong> au sein de la statistique. Les deux domaines se recouvrent largement et traitent des problèmes supervisés et non supervisés.</p><ul><li>Le machine learning met souvent l’accent sur les applications à grande échelle et la précision prédictive.</li><li>L’apprentissage statistique met souvent l’accent sur les modèles, leur interprétabilité et leur précision.</li></ul><p>La frontière est devenue floue et les interactions sont fortes. Le terme « machine learning » bénéficie également d’une forte visibilité.</p>"
+          "html": "<ul><li>Le <strong>machine learning</strong> (issu de l’IA) : grande échelle, précision prédictive.</li><li>L’<strong>apprentissage statistique</strong> (issu de la statistique) : modèles, interprétabilité, précision.</li></ul><p>Mêmes problèmes ; la frontière est devenue floue.</p>"
         },
         {
           "type": "table",
           "title": "Problématiques associées à l’apprentissage",
           "headers": [
+            "Type",
             "Problématique",
             "Objectif"
           ],
           "rows": [
             [
-              "Apprentissage supervisé",
-              "Prédire une sortie à partir d’entrées."
+              "Supervisé",
+              "Régression",
+              "Prédire une sortie numérique à partir d’entrées."
             ],
             [
-              "Apprentissage non supervisé",
-              "Établir une typologie des observations."
+              "Supervisé",
+              "Discrimination",
+              "Prédire une classe à partir d’entrées."
             ],
             [
+              "Non supervisé",
+              "Typologie (clustering)",
+              "Regrouper des observations semblables."
+            ],
+            [
+              "Non supervisé",
               "Règles d’association",
-              "Identifier des liens entre produits ou événements."
+              "Relier produits ou événements."
             ],
             [
+              "Les deux",
               "Systèmes de recommandation",
-              "Prédire les produits susceptibles d’intéresser un utilisateur."
+              "Prédire une note (supervisé, prix Netflix) ou suggérer des produits souvent associés (non supervisé)."
             ]
           ]
         },
@@ -103,43 +113,43 @@ window.SID34_CHAPTER_1 = {
           "rows": [
             [
               "\\(\\mathcal{X}\\)",
-              "Espace des entrées : features, prédicteurs."
+              "Espace des entrées (features)."
             ],
             [
               "\\(\\mathcal{Y}\\)",
-              "Espace des sorties : réponse, étiquette."
+              "Espace des sorties (étiquettes)."
             ],
             [
               "\\(X,\\ Y\\)",
-              "Variables aléatoires prenant leurs valeurs dans \\(\\mathcal{X}\\) et \\(\\mathcal{Y}\\)."
+              "Variables aléatoires à valeurs dans \\(\\mathcal{X}\\) et \\(\\mathcal{Y}\\)."
             ],
             [
               "\\((X,Y)\\)",
-              "Couple aléatoire décrivant un individu observé."
+              "Couple aléatoire : un individu."
             ],
             [
               "\\(D_n\\)",
-              "Échantillon aléatoire d’apprentissage de \\(n\\) couples."
+              "Échantillon d’apprentissage de \\(n\\) couples."
             ],
             [
               "\\((x_i,y_i)\\)",
-              "Réalisation observée du couple \\((X_i,Y_i)\\)."
+              "Réalisation du couple \\((X_i,Y_i)\\)."
             ],
             [
               "\\(f\\)",
-              "Fonction de prévision candidate ; \\(\\hat f\\) désigne celle apprise sur les données."
+              "Prévision candidate ; \\(\\hat f\\) : apprise sur les données."
             ],
             [
               "\\(y_i,\\ \\hat y_i\\)",
-              "Sortie observée et sortie prédite : \\(\\hat y_i=\\hat f(x_i)\\)."
+              "Sortie observée, sortie prédite \\(\\hat y_i=\\hat f(x_i)\\)."
             ],
             [
               "\\(g(x)\\)",
-              "Score réel d’un classifieur ; une règle de décision le transforme en classe \\(\\hat y\\)."
+              "Score d’un classifieur, converti en classe \\(\\hat y\\)."
             ],
             [
               "\\(\\ell\\)",
-              "Fonction de perte : mesure le coût d’une erreur de prévision."
+              "Perte : coût d’une erreur."
             ],
             [
               "\\(\\mathcal{R}(f)\\)",
@@ -150,28 +160,28 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "formula",
           "tex": "\\begin{gathered}X\\in\\mathcal{X},\\qquad Y\\in\\mathcal{Y},\\\\ D_n=\\{(X_1,Y_1),\\ldots,(X_n,Y_n)\\},\\\\ f:\\mathcal{X}\\longrightarrow\\mathcal{Y},\\\\ \\mathcal{R}(f)=\\mathbb{E}[\\ell(Y,f(X))].\\end{gathered}",
-          "explanation": "Les majuscules désignent les variables aléatoires. Les minuscules désignent leurs valeurs observées. Le cadre de départ suppose les couples de \\(D_n\\) indépendants et identiquement distribués."
+          "explanation": "Majuscules : aléatoires ; minuscules : observées. Couples de \\(D_n\\) i.i.d."
         },
         {
           "type": "prose",
           "title": "Problème d’apprentissage supervisé",
-          "html": "<p>On dispose d’une variable de sortie — <strong>variable dépendante, réponse ou cible</strong> — et d’un vecteur de <strong>\\(p\\) variables explicatives</strong>, également appelées entrées, prédicteurs, covariables ou features.</p><ul><li>En <strong>régression</strong>, la cible est quantitative : un prix ou une tension artérielle, par exemple.</li><li>En <strong>discrimination</strong>, elle prend des valeurs dans un ensemble fini et non ordonné : survie/mort, chiffre de \\(0\\) à \\(9\\), classe de tissu.</li></ul><p>Les couples entrée–sortie disponibles sont les observations, exemples ou instances à partir desquels l’algorithme apprend.</p>"
+          "html": "<p>On observe des couples <strong>entrée</strong> \\(x\\) (\\(p\\) variables explicatives) et <strong>sortie</strong> \\(y\\) (la cible). But : prédire \\(y\\) pour une nouvelle entrée.</p><ul><li><strong>Régression</strong> : \\(y\\) quantitative (prix, tension artérielle).</li><li><strong>Discrimination</strong> : \\(y\\) parmi des classes (survie/mort, chiffre de \\(0\\) à \\(9\\)).</li></ul>"
         },
         {
           "type": "prose",
           "title": "Apprentissage non supervisé",
-          "html": "<p>Il n’y a pas de variable de sortie fournie : seules les mesures ou caractéristiques des observations sont disponibles. L’objectif est exploratoire.</p><ul><li>Trouver des groupes d’observations qui se ressemblent.</li><li>Trouver des variables qui se comportent de manière similaire.</li><li>Trouver des combinaisons linéaires de variables capturant une grande part de la variance.</li></ul><p>L’absence de vérité terrain rend l’évaluation plus difficile. Une méthode non supervisée peut aussi servir de prétraitement, par exemple une réduction de dimension avant une classification supervisée.</p>"
+          "html": "<p>Seulement des entrées \\(x\\), <strong>sans sortie</strong> : on explore.</p><ul><li><strong>Regrouper</strong> les observations semblables (clustering).</li><li><strong>Résumer</strong> les variables redondantes (réduction de dimension).</li></ul><p>Sans vérité terrain, l’évaluation est plus difficile.</p>"
         },
         {
           "type": "prose",
           "title": "Le prix Netflix",
-          "html": "<p>La compétition commence en <strong>octobre 2006</strong>. Netflix fournit environ <strong>100 millions de notes</strong>, de <strong>480 000 clients</strong> pour près de <strong>18 000 films</strong>. Les notes vont de <strong>1 à 5</strong> ; près de <strong>99 %</strong> des cases de la matrice client–film sont vides.</p><p>Les participants prédisent environ <strong>3 millions de notes réservées</strong> : une moitié sert au classement public, l’autre au <strong>test final</strong>.</p><p>L’erreur de prédiction de Netflix sur le test vaut <strong>0,9525</strong>. La réduire de <strong>10 %</strong> permet de remporter <strong>un million de dollars</strong>.</p>"
+          "html": "<ul><li>Lancement : <strong>octobre 2006</strong>.</li><li>Environ <strong>100 millions de notes</strong> (de <strong>1 à 5</strong>), <strong>480 000 clients</strong>, près de <strong>18 000 films</strong> ; matrice vide à près de <strong>99 %</strong>.</li><li>À prédire : environ <strong>3 millions de notes réservées</strong>, moitié classement public, moitié <strong>test final</strong>.</li><li>Réduire de <strong>10 %</strong> l’erreur de Netflix (<strong>0,9525</strong>) : <strong>un million de dollars</strong>.</li></ul>"
         },
         {
           "type": "exercise",
           "title": "Le prix Netflix · question du cours",
           "question": "<p><strong>S’agit-il d’un problème supervisé ou non supervisé ?</strong> Identifier les entrées, la sortie et les exemples observés.</p>",
-          "answer": "<p>La tâche de prédiction des notes est <strong>supervisée</strong> : chaque note connue fournit une sortie observée associée à un couple client–film. Les entrées décrivent le client et le film ; la sortie est une note numérique. On peut donc la traiter comme une tâche de régression. Le grand nombre de couples sans note ne transforme pas cette tâche en apprentissage non supervisé.</p>"
+          "answer": "<p>Tâche <strong>supervisée</strong> : chaque note connue est une sortie observée pour un couple client–film. Entrées : client et film ; sortie : note numérique (régression). Les couples sans note ne la rendent pas non supervisée.</p>"
         },
         {
           "type": "callout",
@@ -184,29 +194,29 @@ window.SID34_CHAPTER_1 = {
       "id": "regression-discrimination",
       "title": "Régression vs Discrimination",
       "duration": 12,
-      "intro": "Premier volet du cadre mathématique de l’apprentissage statistique supervisé : données, objectifs, vocabulaire et fonction de prévision.",
+      "intro": "Données, objectifs, vocabulaire, fonction de prévision.",
       "objective": "Formaliser un problème entrée–sortie et distinguer la nature de la cible de celle des entrées.",
       "blocks": [
         {
           "type": "formula",
           "tex": "\\begin{gathered}d_n=\\{(x_1,y_1),\\ldots,(x_n,y_n)\\},\\\\ x_i\\in\\mathcal{X},\\qquad y_i\\in\\mathcal{Y}.\\end{gathered}",
-          "explanation": "\\(d_n\\) désigne les données observées. \\(n\\) est le nombre d’exemples disponibles ; chaque entrée \\(x_i\\) est associée à une sortie \\(y_i\\)."
+          "explanation": "\\(d_n\\) : \\(n\\) exemples observés, chaque entrée \\(x_i\\) avec sa sortie \\(y_i\\)."
         },
         {
           "type": "figure",
           "src": "assets/lecture1/rec.png",
           "alt": "Six images de chiffres manuscrits associées aux étiquettes 9, 6, 6, 5, 4 et 0 ; des flèches identifient l’image et sa sortie.",
-          "caption": "Reconnaissance de caractères : l’image est l’entrée, le chiffre identifié est la sortie."
+          "caption": "Reconnaissance de caractères : image en entrée, chiffre en sortie."
         },
         {
           "type": "prose",
           "title": "Objectifs",
-          "html": "<ol><li><strong>Expliquer</strong> les mécanismes liant les entrées aux sorties.</li><li><strong>Prédire « au mieux »</strong> la sortie associée à une nouvelle entrée.</li></ol><p>Une fonction de prévision est choisie en fonction d’un critère de qualité. Ce critère sera formalisé par une fonction de perte.</p>"
+          "html": "<ol><li><strong>Expliquer</strong> le lien entrées–sorties.</li><li><strong>Prédire « au mieux »</strong> la sortie d’une nouvelle entrée.</li></ol><p>« Au mieux » : selon une fonction de perte.</p>"
         },
         {
           "type": "prose",
           "title": "Vocabulaire",
-          "html": "<p>Lorsque la variable à expliquer est <strong>quantitative</strong>, on parle de <strong>régression</strong>. Lorsqu’elle est qualitative, avec un ensemble fini de classes, on parle de <strong>discrimination</strong> ou de <strong>classification supervisée</strong> (<em>classification</em>).</p><p>La nature des entrées peut être variée : quantitative, qualitative, ordinale, image ou autre représentation. C’est la nature de la <strong>sortie</strong> qui détermine cette distinction.</p>"
+          "html": "<ul><li>Sortie <strong>quantitative</strong> : <strong>régression</strong>.</li><li>Sortie qualitative (classes en nombre fini) : <strong>discrimination</strong> ou <strong>classification supervisée</strong>.</li></ul><p>Entrées de toute nature ; c’est la <strong>sortie</strong> qui décide.</p>"
         },
         {
           "type": "table",
@@ -231,22 +241,22 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "prose",
           "title": "Un début de formalisation mathématique",
-          "html": "<p>Les données observées sont une réalisation d’un <strong>\\(n\\)-échantillon</strong> de loi inconnue. Le plus souvent, nous supposerons les couples indépendants et identiquement distribués selon une même loi, notée \\(\\mathbb{P}\\).</p><p>À partir de ces observations, on cherche une fonction qui relie les entrées aux sorties. Il faut ensuite préciser un critère permettant de comparer les fonctions de prévision : une <strong>fonction de perte</strong>.</p>"
+          "html": "<p>Données : réalisation d’un <strong>\\(n\\)-échantillon</strong>, en général i.i.d. de loi inconnue \\(\\mathbb{P}\\).</p><p>On compare les fonctions candidates avec une <strong>fonction de perte</strong>.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}D_n=\\{(X_i,Y_i):i=1,\\ldots,n\\},\\\\ (X_i,Y_i)\\overset{\\mathrm{i.i.d.}}{\\sim}\\mathbb{P},\\\\ f:\\mathcal{X}\\longrightarrow\\mathcal{Y},\\qquad f(x_i)\\approx y_i.\\end{gathered}",
-          "explanation": "La loi \\(\\mathbb{P}\\) est inconnue. L’ajustement sur les exemples observés est une première exigence ; la généralisation à de nouvelles observations reste l’objectif."
+          "explanation": "\\(\\mathbb{P}\\) est inconnue. Ajuster les exemples ne suffit pas : l’objectif est de généraliser."
         },
         {
           "type": "prose",
           "title": "En outre…",
-          "html": "<p>Une fonction de prévision dépend des paramètres du modèle, notés \\(\\theta\\). Dans les <strong>exemples affines ci-dessous</strong>, \\(\\theta=(w,b)\\) : coefficients et terme constant.</p>"
+          "html": "<p>Une prévision dépend de paramètres \\(\\theta\\) ; dans les <strong>exemples affines ci-dessous</strong>, \\(\\theta=(w,b)\\).</p>"
         },
         {
           "type": "formula",
           "tex": "\\hat y=\\hat f(x),\\qquad\\hat f=f_\\theta,\\quad\\theta=(w,b)",
-          "explanation": "Dans ces modèles affines, \\(w\\) contient les coefficients et \\(b\\) le terme constant ; l’apprentissage les détermine. Pour la décision SVM, on prend \\(\\hat y=+1\\) lorsque \\(g(x)=0\\)."
+          "explanation": "\\(w\\) : coefficients ; \\(b\\) : terme constant. SVM : \\(\\hat y=+1\\) si \\(g(x)=0\\)."
         },
         {
           "type": "table",
@@ -263,7 +273,7 @@ window.SID34_CHAPTER_1 = {
             ],
             [
               "SVM binaire",
-              "\\(\\hat y=\\operatorname{sign}(g(x)),\\quad g(x)=w^{\\top}x+b\\) ; à score nul, choisir \\(+1\\).",
+              "\\(\\hat y=\\operatorname{sign}(g(x)),\\quad g(x)=w^{\\top}x+b\\) ; score nul : \\(+1\\).",
               "\\(\\theta=(w,b)\\)"
             ]
           ]
@@ -274,90 +284,104 @@ window.SID34_CHAPTER_1 = {
       "id": "fonction-perte",
       "title": "Fonction de perte",
       "duration": 12,
-      "intro": "Définir un coût pour une prévision : pertes Lᵖ en régression, perte 0–1 en discrimination et choix de la fonction de perte.",
+      "intro": "Pertes Lᵖ en régression, perte 0–1 en discrimination, choix de la perte.",
       "objective": "Reconnaître le domaine et la convention d’une perte, puis distinguer décision et score dans le SVM.",
       "blocks": [
         {
           "type": "prose",
           "title": "Définition",
-          "html": "<p>Une <strong>fonction de perte</strong> mesure le coût d’une prévision. Elle est mesurable, non négative et, dans les exemples suivants, nulle lorsque la prévision est exacte.</p>"
+          "html": "<p>Une <strong>fonction de perte</strong> mesure le coût d’une prévision : mesurable, non négative, ici nulle si la prévision est exacte.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\ell:\\mathcal{Y}\\times\\mathcal{Y}\\longrightarrow\\mathbb{R}^{+},\\\\ \\ell(y,y)=0,\\qquad \\ell(y,\\hat y)>0\\ \\text{si }y\\ne\\hat y.\\end{gathered}",
-          "explanation": "\\(y\\) est observé ; \\(\\hat y\\) est prédit. Ici la perte compare deux sorties ; la perte charnière du SVM compare l’étiquette au score réel \\(g(x)\\)."
+          "explanation": "\\(y\\) observé, \\(\\hat y\\) prédit. La perte charnière, elle, compare l’étiquette au score \\(g(x)\\)."
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>Dans la définition, la première égalité est \\(\\ell(y,y)=0\\). Elle ne dit pas que toutes les paires cible–prévision ont une perte nulle.</p>"
+          "html": "<p>\\(\\ell(y,y)=0\\) : perte nulle pour une prévision exacte, pas pour toute paire.</p>"
         },
         {
           "type": "formula",
           "tex": "\\ell_p(y,\\hat y)=\\frac1p|y-\\hat y|^p,\\qquad p\\geq1",
-          "explanation": "En régression réelle, le support introduit les pertes \\(L^{p}\\) avec le facteur \\(1/p\\). Ce facteur est conservé pour les cas particuliers ci-dessous."
+          "explanation": "Régression : pertes \\(L^{p}\\), facteur \\(1/p\\) conservé ci-dessous."
         },
         {
           "type": "table",
           "headers": [
-            "Valeur de \\(p\\)",
             "Perte",
-            "Expression"
+            "Expression",
+            "Tâche"
           ],
           "rows": [
             [
-              "\\(p=1\\)",
-              "Perte absolue",
-              "\\(|y-\\hat y|\\)"
+              "Perte absolue (\\(p=1\\))",
+              "\\(|y-\\hat y|\\)",
+              "Régression"
             ],
             [
-              "\\(p=2\\)",
-              "Perte quadratique",
-              "\\(\\tfrac12(y-\\hat y)^{2}\\)"
+              "Perte quadratique (\\(p=2\\))",
+              "\\(\\tfrac12(y-\\hat y)^{2}\\)",
+              "Régression"
+            ],
+            [
+              "Perte 0-1",
+              "\\(\\mathbf{1}_{\\{y\\ne\\hat y\\}}\\)",
+              "Discrimination"
             ]
           ]
         },
         {
           "type": "formula",
-          "tex": "\\mathcal{Y}=\\{-1,+1\\},\\qquad\\ell(y,\\hat y)=\\mathbf{1}_{\\{y\\ne\\hat y\\}}",
-          "explanation": "En discrimination binaire, la perte 0–1 vaut 0 si la classe est correcte et 1 si elle est incorrecte."
+          "tex": "\\mathcal{Y}=\\{-1,+1\\},\\qquad\\ell_{0\\text{-}1}(y,\\hat y)=\\mathbf{1}_{\\{y\\ne\\hat y\\}}",
+          "explanation": "Perte 0-1, en discrimination binaire : 0 si la classe est correcte, 1 sinon."
         },
         {
           "type": "table",
           "title": "Choix de la fonction de perte",
           "headers": [
             "Modèle",
-            "Prévision ou décision",
-            "Perte d’entraînement"
+            "Prévision à partir du score \\(g(x)=w^{\\top}x+b\\)",
+            "Perte d’entraînement",
+            "Tâche"
           ],
           "rows": [
             [
               "Régression linéaire",
-              "\\(\\hat y=w^{\\top}x+b\\)",
-              "\\(\\tfrac12(y-\\hat y)^{2}\\)"
+              "\\(\\hat y=g(x)\\)",
+              "\\(\\tfrac12\\big(y-g(x)\\big)^{2}\\)",
+              "Régression"
             ],
             [
-              "SVM",
-              "Classe : \\(\\operatorname{sign}(g(x))\\) ; score : \\(g(x)=w^{\\top}x+b\\)",
-              "\\(\\max(0,\\,1-y\\,g(x))\\)"
+              "Régression logistique (chapitre 2), \\(y\\in\\{0,1\\}\\)",
+              "\\(\\hat p=\\sigma(g(x))\\), \\(\\hat y=\\mathbf{1}_{\\{\\hat p\\ge t\\}}\\)",
+              "\\(-y\\log\\hat p-(1-y)\\log(1-\\hat p)\\)",
+              "Discrimination"
+            ],
+            [
+              "SVM, \\(y\\in\\{-1,+1\\}\\)",
+              "\\(\\hat y=\\operatorname{sign}(g(x))\\)",
+              "\\(\\max(0,\\,1-y\\,g(x))\\)",
+              "Discrimination"
             ]
           ]
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}g(x)=w^\\top x+b,\\qquad\\hat y=\\operatorname{sign}(g(x)),\\\\ \\ell_{\\mathrm{hinge}}(y,g(x))=\\max(0,1-y\\,g(x)).\\end{gathered}",
-          "explanation": "\\(y\\) est observé ; \\(g(x)\\) est le score ; \\(\\hat y\\in\\{-1,+1\\}\\) est prédit. On choisit \\(+1\\) lorsque le score est nul : c’est notre convention pour la décision par signe."
+          "explanation": "\\(g(x)\\) : score ; \\(\\hat y\\in\\{-1,+1\\}\\) : prédiction, \\(+1\\) si le score est nul."
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>Dans la ligne SVM, le score \\(g(x)\\) entre dans la perte charnière ; le signe sert à décider la classe. Utiliser uniquement la classe ferait disparaître l’information de marge.</p>"
+          "html": "<p>Chaque perte du tableau utilise le score \\(g(x)\\) ; la prévision \\(\\hat y\\) en découle : identité, seuil sur la probabilité logistique ou signe.</p>"
         },
         {
           "type": "figure",
           "src": "assets/lecture1/lossff.png",
           "alt": "Comparaison de la perte quadratique, une parabole centrée sur la cible, et de la perte charnière pour les classes −1 et +1.",
-          "caption": "À gauche : la demi-perte quadratique. Dans la partie SVM, y′ sur l’axe désigne le score continu, pas la classe prédite."
+          "caption": "Demi-perte quadratique ; côté SVM, y′ est le score continu, pas la classe."
         },
         {
           "type": "demo",
@@ -374,77 +398,77 @@ window.SID34_CHAPTER_1 = {
       "id": "risque",
       "title": "Risque",
       "duration": 16,
-      "intro": "Du comportement moyen de la perte à la fonction de prévision optimale, puis à la fonction de régression et à l’objectif d’apprentissage.",
+      "intro": "Perte moyenne, prédicteur optimal, fonction de régression, objectif d’apprentissage.",
       "objective": "Définir le risque, comprendre l’oracle et expliquer pourquoi le prédicteur appris dépend de l’échantillon.",
       "blocks": [
         {
           "type": "prose",
           "title": "Risque",
-          "html": "<p>On s’intéresse au <strong>comportement moyen</strong> de la fonction de perte. Pour une fonction de prévision fixée, sa performance est mesurée par l’espérance de la perte sur un couple entrée–sortie de la population cible.</p>"
+          "html": "<p>Le <strong>comportement moyen</strong> de la perte, pour une prévision fixée : son espérance sur la population.</p>"
         },
         {
           "type": "formula",
           "tex": "\\mathcal{R}(f)=\\mathbb{E}\\bigl[\\ell(Y,f(X))\\bigr]",
-          "explanation": "\\(\\mathcal{R}(f)\\) est appelé risque ou erreur de généralisation. Le couple futur \\((X,Y)\\) suit la même loi \\(\\mathbb{P}\\) que les données d’apprentissage et est indépendant de cet échantillon."
+          "explanation": "Risque, ou erreur de généralisation. Couple futur \\((X,Y)\\) : même loi \\(\\mathbb{P}\\), indépendant de l’échantillon."
         },
         {
           "type": "prose",
           "title": "Fonction de prévision optimale",
-          "html": "<p><strong>Aspect théorique :</strong> pour une perte donnée, chercher la fonction ayant le plus petit risque. Une telle fonction, si elle existe, est une fonction de prévision optimale.</p>"
+          "html": "<p><strong>Aspect théorique :</strong> à perte donnée, la fonction de risque minimal, si elle existe, est optimale.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}f^*\\in\\underset{f}{\\arg\\min}\\;\\mathcal{R}(f),\\\\ \\mathcal{R}(f^*)\\leq\\mathcal{R}(f)\\quad\\text{pour toute }f.\\end{gathered}",
-          "explanation": "Le choix optimal dépend de la perte et, le plus souvent, de la loi inconnue \\(\\mathbb{P}\\). Il constitue une référence théorique."
+          "explanation": "Dépend de la perte et, souvent, de la loi inconnue \\(\\mathbb{P}\\) : référence théorique."
         },
         {
           "type": "prose",
           "title": "Aspect pratique",
-          "html": "<p>La loi étant inconnue, nous ne pouvons généralement pas calculer directement la fonction optimale. Nous cherchons un estimateur construit à partir des données dont le risque est proche de celui de l’oracle.</p>"
+          "html": "<p>Loi inconnue : l’optimum n’est en général pas calculable directement. On cherche, à partir des données, un estimateur de risque proche de l’oracle.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\hat f=\\hat f(\\cdot;D_n),\\\\ \\mathcal{R}(\\hat f)\\approx\\mathcal{R}(f^*).\\end{gathered}",
-          "explanation": "\\(\\hat f\\) est apprise sur \\(D_n\\) ; \\(f^*\\) est la référence optimale. Un autre échantillon peut donner une autre \\(\\hat f\\)."
+          "explanation": "\\(\\hat f\\) : apprise sur \\(D_n\\) ; \\(f^*\\) : référence. Autre échantillon, autre \\(\\hat f\\)."
         },
         {
           "type": "figure",
           "title": "Intuition",
           "src": "assets/lecture1/regression.png",
           "alt": "Nuage de points autour d’une courbe rouge ; une verticale à x = 4 met en évidence la dispersion des sorties à entrée fixée.",
-          "caption": "À une entrée fixée, plusieurs valeurs de la sortie sont possibles ; la courbe rouge illustre la fonction de régression."
+          "caption": "À entrée fixée, plusieurs sorties possibles ; courbe rouge : fonction de régression."
         },
         {
           "type": "prose",
           "title": "Intuition",
-          "html": "<p>À une valeur d’entrée fixée, plusieurs valeurs de la sortie peuvent être observées. Quelle prévision représente alors une bonne valeur ? Pour la perte quadratique, la réponse est la <strong>moyenne conditionnelle</strong> de la sortie sachant cette entrée.</p>"
+          "html": "<p>À entrée fixée, plusieurs sorties possibles : laquelle prédire ? Sous perte quadratique, la <strong>moyenne conditionnelle</strong>.</p>"
         },
         {
           "type": "formula",
           "tex": "m^*(x)=\\mathbb{E}[Y\\mid X=x]",
-          "explanation": "L’espérance conditionnelle est la valeur moyenne de \\(Y\\) lorsque \\(X=x\\). Elle est optimale sous perte quadratique ; cette propriété dépend du choix de la perte."
+          "explanation": "Moyenne de \\(Y\\) sachant \\(X=x\\) : optimale sous perte quadratique, pas pour toute perte."
         },
         {
           "type": "figure",
           "title": "Cas de la régression",
           "src": "assets/lecture1/ols.png",
           "alt": "Points bleus et droite noire ; des carrés rouges représentent les carrés des écarts verticaux entre les observations et la droite.",
-          "caption": "Les carrés rouges représentent les résidus au carré : l’ajustement quadratique cherche à réduire leur somme."
+          "caption": "Carrés rouges : résidus au carré ; l’ajustement quadratique réduit leur somme."
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\mathcal{Y}=\\mathbb{R},\\qquad f:\\mathcal{X}\\longrightarrow\\mathbb{R},\\\\ \\mathcal{R}(f)=\\mathbb{E}[(Y-f(X))^2],\\\\ m^*(x)=\\mathbb{E}[Y\\mid X=x].\\end{gathered}",
-          "explanation": "\\(f\\) est une fonction candidate ; sous perte quadratique, l’optimum \\(f^*\\) est \\(m^*\\), la moyenne conditionnelle généralement inconnue. On suppose des moments d’ordre deux finis."
+          "explanation": "Sous perte quadratique, l’optimum \\(f^*\\) est \\(m^*\\), en général inconnue. Moments d’ordre deux finis."
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>Cette partie écrit le risque quadratique <strong>sans le facteur \\(\\tfrac12\\)</strong>. Multiplier toute la perte par une constante positive change les valeurs du risque, mais pas le prédicteur qui le minimise.</p>"
+          "html": "<p>Risque quadratique écrit <strong>sans le facteur \\(\\tfrac12\\)</strong> : une constante positive change le risque, pas son minimiseur.</p>"
         },
         {
           "type": "callout",
           "title": "Question du cours",
-          "html": "<p><strong>Comment écrire le risque en discrimination ?</strong> Utiliser la perte 0–1.</p><details class=\"as-theory\"><summary>Réponse</summary><div><p>La perte vaut 1 si la classe est incorrecte, 0 sinon :</p>\\[\\mathcal R(f)=\\mathbb E[\\mathbf 1_{\\{f(X)\\ne Y\\}}]=\\mathbb P(f(X)\\ne Y).\\]<p>Le prédicteur optimal choisit une classe de probabilité conditionnelle maximale :</p>\\[f^*(x)\\in\\operatorname*{argmax}_{k\\in\\mathcal Y}\\mathbb P(Y=k\\mid X=x).\\]<p>En cas d’égalité, on fixe une convention de départage.</p></div></details>"
+          "html": "<p><strong>Comment écrire le risque en discrimination ?</strong> Utiliser la perte 0–1.</p><details class=\"as-theory\"><summary>Réponse</summary><div><p>Avec la perte 0–1 :</p>\\[\\mathcal R(f)=\\mathbb E[\\mathbf 1_{\\{f(X)\\ne Y\\}}]=\\mathbb P(f(X)\\ne Y).\\]<p>Optimum : une classe de probabilité conditionnelle maximale :</p>\\[f^*(x)\\in\\operatorname*{argmax}_{k\\in\\mathcal Y}\\mathbb P(Y=k\\mid X=x).\\]<p>Égalité : convention de départage.</p></div></details>"
         },
         {
           "type": "table",
@@ -456,7 +480,7 @@ window.SID34_CHAPTER_1 = {
           "rows": [
             [
               "Données \\(d_n\\)",
-              "Observations issues d’un échantillon i.i.d. de loi inconnue \\(\\mathbb{P}\\)."
+              "Observations i.i.d. de loi inconnue \\(\\mathbb{P}\\)."
             ],
             [
               "Prédicteur \\(f\\)",
@@ -464,7 +488,7 @@ window.SID34_CHAPTER_1 = {
             ],
             [
               "Coût \\(\\ell(Y,f(X))\\)",
-              "Mesurer la perte sur un couple entrée–sortie."
+              "Mesurer la perte sur un couple."
             ],
             [
               "Risque \\(\\mathcal{R}(f)\\)",
@@ -472,14 +496,14 @@ window.SID34_CHAPTER_1 = {
             ],
             [
               "Oracle f*",
-              "Minimiser le risque ; dépend de la loi inconnue."
+              "Minimiser le risque ; dépend de \\(\\mathbb{P}\\)."
             ]
           ]
         },
         {
           "type": "prose",
           "title": "Objectif",
-          "html": "<p>Construire un algorithme de prévision qui <strong>généralise bien sur de nouvelles données</strong> : le risque du prédicteur appris doit se rapprocher du risque optimal.</p><p>Ses performances dépendent du <strong>choix du modèle et de sa complexité</strong>, de la <strong>quantité de données disponibles</strong> et du <strong>compromis biais–variance</strong>.</p>"
+          "html": "<p>Objectif : un algorithme qui <strong>généralise bien sur de nouvelles données</strong>, de risque proche de l’optimum.</p><p>Facteurs : <strong>choix du modèle et de sa complexité</strong>, <strong>quantité de données disponibles</strong>, <strong>compromis biais–variance</strong>.</p>"
         }
       ]
     },
@@ -487,56 +511,56 @@ window.SID34_CHAPTER_1 = {
       "id": "biais-variance",
       "title": "Décomposition de l’erreur et compromis biais–variance",
       "duration": 12,
-      "intro": "Décomposer l’erreur quadratique en biais, variance et bruit, puis relier ces termes au choix de la complexité.",
+      "intro": "Biais, variance, bruit : décomposer l’erreur pour choisir la complexité.",
       "objective": "Interpréter les trois termes de l’erreur et distinguer variation des données et bruit de la réponse.",
       "blocks": [
         {
           "type": "prose",
           "title": "Décomposition de l’erreur : biais, variance et bruit",
-          "html": "<p>Pour une entrée fixée, l’erreur quadratique attendue se décompose en <strong>biais au carré</strong>, <strong>variance</strong> et <strong>bruit</strong>.</p><p>\\(m^*\\) est la vraie moyenne conditionnelle ; \\(\\hat f\\) est le prédicteur appris. On suppose un bruit de variance constante, des moments d’ordre deux finis et une cible future indépendante de l’apprentissage.</p>"
+          "html": "<p>À entrée fixée, l’erreur quadratique attendue se décompose en <strong>biais au carré</strong>, <strong>variance</strong> et <strong>bruit</strong>.</p><p>Hypothèses : bruit de variance constante, moments d’ordre deux finis, cible future indépendante de l’apprentissage.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}m^*(x)=\\mathbb{E}[Y\\mid X=x],\\\\ Y=m^*(X)+\\varepsilon,\\qquad\\mathbb{E}[\\varepsilon\\mid X]=0.\\end{gathered}",
-          "explanation": "\\(Y\\) est une sortie aléatoire, \\(m^*(x)\\) une moyenne théorique et \\(\\hat f(x)\\) une prédiction apprise."
+          "explanation": "\\(Y\\) : sortie aléatoire ; \\(m^*(x)\\) : moyenne théorique ; \\(\\hat f(x)\\) : prédiction apprise."
         },
         {
           "type": "formula",
           "tex": "\\begin{aligned}\\mathbb{E}\\!\\left[(Y-\\widehat f(X))^2\\mid X=x\\right]&=\\underbrace{\\left(m^*(x)-\\mathbb{E}[\\widehat f(x)]\\right)^2}_{\\text{biais au carré}}\\\\ &\\quad+\\underbrace{\\mathbb{E}\\!\\left[(\\widehat f(x)-\\mathbb{E}[\\widehat f(x)])^2\\right]}_{\\text{variance}}\\\\ &\\quad+\\underbrace{\\operatorname{Var}(\\varepsilon)}_{\\text{bruit}}.\\end{aligned}",
-          "explanation": "Les espérances impliquant \\(\\hat f\\) portent sur les échantillons d’apprentissage possibles. La variance du bruit est supposée constante."
+          "explanation": "Espérances en \\(\\hat f\\) : sur les échantillons d’apprentissage possibles."
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>Si la variance du bruit dépend de l’entrée, le terme de bruit au point considéré est \\(\\operatorname{Var}(Y\\mid X=x)\\). La formule avec \\(\\operatorname{Var}(\\varepsilon)\\) correspond au cas d’une variance conditionnelle constante.</p>"
+          "html": "<p>Bruit dépendant de l’entrée : le terme vaut \\(\\operatorname{Var}(Y\\mid X=x)\\) ; \\(\\operatorname{Var}(\\varepsilon)\\) suppose une variance constante.</p>"
         },
         {
           "type": "prose",
           "title": "Compromis Bias-Variance · Biais",
-          "html": "<p>Le <strong>biais</strong> est la différence entre la prévision moyenne du modèle et la valeur réelle qu’il cherche à estimer. Un modèle trop restrictif peut garder un décalage systématique même lorsque l’on répète l’apprentissage.</p>"
+          "html": "<p>Le <strong>biais</strong> : écart entre prévision moyenne et vraie valeur. Un modèle trop restrictif peut le garder, même en répétant l’apprentissage.</p>"
         },
         {
           "type": "figure",
           "src": "assets/lecture1/jackpot.png",
           "alt": "Deux cibles : les impacts sont groupés près du centre pour le biais faible, et groupés à côté du centre pour le biais élevé.",
-          "caption": "Biais faible ou élevé : comparer la position moyenne des impacts au centre de la cible."
+          "caption": "Biais : position moyenne des impacts par rapport au centre."
         },
         {
           "type": "prose",
           "title": "Compromis Bias-Variance · Variance",
-          "html": "<p>La <strong>variance</strong> mesure à quel point les prévisions changent lorsque les données d’apprentissage changent. On compare des modèles appris sur différents échantillons provenant du même problème.</p>"
+          "html": "<p>La <strong>variance</strong> : combien les prévisions changent quand l’échantillon d’apprentissage change.</p>"
         },
         {
           "type": "figure",
           "src": "assets/lecture1/jacknot.png",
           "alt": "Deux cibles : les impacts sont regroupés pour une faible variance et dispersés pour une forte variance.",
-          "caption": "Variance faible ou élevée : comparer la dispersion des impacts, indépendamment de leur centrage."
+          "caption": "Variance : dispersion des impacts, quel que soit le centrage."
         },
         {
           "type": "figure",
           "src": "assets/lecture1/trade.png",
           "alt": "Tableau comparant sous-ajustement, ajustement approprié et sur-ajustement : symptômes, cibles, exemples de régression et classification, courbes de perte et pistes de correction.",
-          "caption": "Sous-ajustement, ajustement approprié et sur-ajustement : symptômes, géométrie, évolution des pertes pendant l’entraînement et pistes de correction."
+          "caption": "Sous-ajustement, bon ajustement, sur-ajustement : symptômes, géométrie, courbes de perte, corrections."
         },
         {
           "type": "demo",
@@ -553,7 +577,7 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "callout",
           "title": "À retenir pour le complément visuel",
-          "html": "<p>Les erreurs obtenues en faisant varier le degré dépendent de cet échantillon synthétique. Une baisse de l’erreur d’apprentissage n’implique pas une baisse de l’erreur de validation. L’allure de cette dernière, parfois en U, n’est pas universelle.</p>"
+          "html": "<ul><li>Erreurs propres à cet échantillon synthétique.</li><li>Moins d’erreur d’apprentissage n’implique pas moins d’erreur de validation.</li><li>Validation parfois en U, pas toujours.</li></ul>"
         }
       ]
     },
@@ -561,86 +585,86 @@ window.SID34_CHAPTER_1 = {
       "id": "estimation-risque",
       "title": "Estimation du risque",
       "duration": 13,
-      "intro": "Risque empirique, validation ou hold-out, validation croisée K-blocs et Leave-One-Out : estimer l’erreur sur des observations tenues à l’écart.",
+      "intro": "Risque empirique, hold-out, validation croisée, Leave-One-Out : estimer l’erreur hors apprentissage.",
       "objective": "Décrire les algorithmes de validation et identifier les données utilisées pour apprendre ou évaluer chaque prévision.",
       "blocks": [
         {
           "type": "prose",
           "title": "Estimation du risque",
-          "html": "<p>La loi du couple entrée–sortie étant inconnue, on ne peut pas calculer directement le risque du prédicteur appris. Une première approche consiste à remplacer l’espérance par une moyenne sur les observations : le <strong>risque empirique</strong>.</p>"
+          "html": "<p>Loi inconnue : on remplace l’espérance par une moyenne sur les observations, le <strong>risque empirique</strong>.</p>"
         },
         {
           "type": "formula",
           "tex": "\\mathcal{R}_n(\\hat f)=\\frac1n\\sum_{i=1}^{n}\\ell(y_i,\\hat f(x_i))",
-          "explanation": "\\(D_n\\) a déjà servi à construire \\(\\hat f\\). L’erreur sur ce même échantillon peut être trop optimiste pour mesurer la généralisation."
+          "explanation": "Sur \\(D_n\\), qui a servi à construire \\(\\hat f\\), l’erreur peut être trop optimiste."
         },
         {
           "type": "callout",
           "title": "Solution",
-          "html": "<p>Évaluer les prévisions sur des observations qui n’ont pas servi à ajuster le modèle. La validation simple et la validation croisée mettent en œuvre ce principe.</p>"
+          "html": "<p>Évaluer sur des observations non utilisées pour l’ajustement : principe de la validation simple et croisée.</p>"
         },
         {
           "type": "prose",
           "title": "Validation ou hold out",
-          "html": "<p>On sépare les données : <strong>apprentissage</strong> pour ajuster, <strong>validation</strong> pour comparer. Les indices sont notés \\(\\mathcal A\\) et \\(\\mathcal V\\).</p><p>Les prétraitements sont appris sur l’apprentissage seulement. Pour des observations liées par sujet ou par date, le découpage doit respecter ces groupes ou l’ordre du temps.</p>"
+          "html": "<p>On sépare : <strong>apprentissage</strong> \\(\\mathcal A\\) pour ajuster, <strong>validation</strong> \\(\\mathcal V\\) pour comparer.</p><ul><li>Prétraitements appris sur l’apprentissage seulement.</li><li>Données liées (sujet, date) : découper par groupe ou dans le temps.</li></ul>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\mathcal{A}\\cap\\mathcal{V}=\\varnothing,\\\\ \\mathcal{A}\\cup\\mathcal{V}=\\{1,\\ldots,n\\},\\\\ \\mathcal{D}_{\\mathrm{app}}=\\{(x_i,y_i):i\\in\\mathcal{A}\\},\\\\ \\mathcal{D}_{\\mathrm{valid}}=\\{(x_i,y_i):i\\in\\mathcal{V}\\}.\\end{gathered}",
-          "explanation": "\\(\\mathcal V\\) désigne la validation, \\(\\mathcal A\\) l’apprentissage. Ils sont disjoints ; le test final reste réservé à l’évaluation."
+          "explanation": "Parties disjointes. Le test final reste réservé à l’évaluation."
         },
         {
           "type": "prose",
           "title": "Algorithme · Validation ou Hold-Out",
-          "html": "<ol><li><strong>Ajuster le modèle et les prétraitements</strong> sur l’apprentissage seulement.</li><li>Noter le prédicteur appris \\(\\hat f_{\\mathrm{app}}=\\hat f(\\cdot;\\mathcal D_{\\mathrm{app}})\\).</li><li><strong>Prédire</strong> les observations de validation avec ces prétraitements et ce modèle fixes.</li><li><strong>Calculer</strong> leur perte moyenne.</li></ol>"
+          "html": "<ol><li><strong>Ajuster le modèle et les prétraitements</strong> sur l’apprentissage : \\(\\hat f_{\\mathrm{app}}=\\hat f(\\cdot;\\mathcal D_{\\mathrm{app}})\\).</li><li><strong>Prédire</strong> la validation, modèle et prétraitements fixés.</li><li><strong>Calculer</strong> la perte moyenne.</li></ol>"
         },
         {
           "type": "formula",
           "tex": "\\widehat{\\mathcal{R}}_{\\mathrm{valid}}=\\frac1{|\\mathcal{V}|}\\sum_{i\\in\\mathcal{V}}\\ell\\bigl(y_i,\\hat f_{\\mathrm{app}}(x_i)\\bigr).",
-          "explanation": "Chaque terme utilise une prévision obtenue sans la réponse de validation correspondante. La taille de la partie de validation détermine aussi la précision de cette estimation."
+          "explanation": "Prévisions faites sans les réponses de validation. Précision liée à la taille de la validation."
         },
         {
           "type": "figure",
           "title": "Illustration",
           "src": "assets/lecture1/split.png",
           "alt": "Une bande de données répartie en trois parties : Train en bleu, Validation en orange et Test en vert.",
-          "caption": "Apprentissage : ajuster ; validation : choisir ; test final : évaluer. \\(\\mathcal V\\) désigne les indices de validation."
+          "caption": "Apprentissage : ajuster ; validation : choisir ; test final : évaluer."
         },
         {
           "type": "callout",
           "title": "Commentaires",
-          "html": "<p>Il faut suffisamment d’observations dans la partie d’apprentissage pour ajuster le modèle, et dans la partie de validation pour estimer convenablement son erreur. Ces deux besoins se partagent un même nombre total d’observations.</p>"
+          "html": "<p>Assez de données pour ajuster, assez pour estimer l’erreur, sur un même total.</p>"
         },
         {
           "type": "prose",
           "title": "Validation croisée K-blocs",
-          "html": "<p>À chaque pli, apprendre sur les autres blocs, puis prédire et mesurer la perte sur le bloc exclu. On moyenne les \\(K\\) pertes.</p><p><strong>Réapprendre aussi les prétraitements dans chaque pli</strong> : les apprendre avant le découpage provoquerait une fuite d’information.</p>"
+          "html": "<p>À chaque pli : apprendre sans un bloc, mesurer la perte sur ce bloc. Moyenner les \\(K\\) pertes.</p><p><strong>Réapprendre aussi les prétraitements dans chaque pli</strong>, sinon fuite d’information.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\{B_1,\\ldots,B_K\\}\\text{ partitionne }\\{1,\\ldots,n\\},\\\\ \\mathcal{B}_k=\\{(x_i,y_i):i\\notin B_k\\},\\\\ \\hat f^{(-k)}=\\hat f(\\cdot;\\mathcal{B}_k).\\end{gathered}",
-          "explanation": "\\(\\hat f^{(-k)}\\) est appris sans le bloc \\(B_k\\), puis évalué sur ce bloc. L’exposant \\((-k)\\) indique les données exclues."
+          "explanation": "\\(\\hat f^{(-k)}\\) : appris sans \\(B_k\\) (exposant \\((-k)\\)), évalué sur \\(B_k\\)."
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}\\widehat{\\mathcal{R}}_k=\\frac1{|B_k|}\\sum_{i\\in B_k}\\ell(y_i,\\hat f^{(-k)}(x_i)),\\\\ \\widehat{\\mathcal{R}}_{\\mathrm{CV}}=\\frac1K\\sum_{k=1}^{K}\\widehat{\\mathcal{R}}_k.\\end{gathered}",
-          "explanation": "La formule du support accorde le même poids à chaque bloc. Si les blocs ont la même taille, elle revient aussi à moyenner les pertes des observations, chacune ayant été prédite hors de son apprentissage."
+          "explanation": "Même poids par bloc. Blocs de même taille : moyenne des pertes de toutes les observations, chacune prédite hors apprentissage."
         },
         {
           "type": "figure",
           "src": "assets/lecture1/k-block.png",
           "alt": "Trois configurations mettent successivement à l’écart les blocs B₁, B₂ et B₃ ; des flèches regroupent leurs résultats de validation.",
-          "caption": "Illustration à trois blocs : apprendre sans \\(B_1\\), puis sans \\(B_2\\), puis sans \\(B_3\\), et agréger les pertes obtenues."
+          "caption": "Apprendre sans \\(B_1\\), puis sans \\(B_2\\), puis sans \\(B_3\\) ; agréger les pertes."
         },
         {
           "type": "prose",
           "title": "Commentaires",
-          "html": "<ul><li>Le choix de \\(K\\) appartient à l’utilisateur ; le support cite notamment \\(K=10\\).</li><li>La répétition évite de dépendre d’une unique séparation apprentissage–validation.</li><li>Elle demande davantage de <strong>temps de calcul</strong>, car le modèle doit être réajusté pour chaque bloc.</li></ul>"
+          "html": "<ul><li>\\(K\\) au choix, par exemple \\(K=10\\).</li><li>Ne dépend pas d’une seule séparation.</li><li>Plus de <strong>temps de calcul</strong> : un ajustement par bloc.</li></ul>"
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p>La validation croisée n’est pas toujours plus stable ou plus précise qu’une séparation simple : cela dépend notamment de \\(K\\), des données et de l’algorithme. Si elle sert à choisir un modèle, le score du candidat retenu ne remplace pas une évaluation finale réservée.</p>"
+          "html": "<p>Pas toujours plus stable ni plus précise qu’une séparation simple : cela dépend de \\(K\\), des données, de l’algorithme.</p><p>Si elle sert à choisir, son score ne remplace pas un test final réservé.</p>"
         },
         {
           "type": "demo",
@@ -651,12 +675,12 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "prose",
           "title": "Leave-One-Out",
-          "html": "<p>Lorsque \\(K=n\\), chaque bloc contient une seule observation : c’est la validation croisée <strong>leave one out</strong> (LOO). Pour chaque indice, on apprend sur l’échantillon amputé de l’observation correspondante et on évalue cette observation.</p>"
+          "html": "<p>\\(K=n\\) : validation croisée <strong>leave one out</strong> (LOO). Chaque observation est prédite par un modèle appris sans elle.</p>"
         },
         {
           "type": "formula",
           "tex": "\\begin{gathered}K=n,\\qquad D_n^{(-i)}=D_n\\setminus\\{(x_i,y_i)\\},\\\\ \\hat f^{(-i)}=\\hat f(\\cdot;D_n^{(-i)}),\\\\ \\widehat{\\mathcal{R}}_{\\mathrm{LOO}}=\\frac1n\\sum_{i=1}^{n}\\ell(y_i,\\hat f^{(-i)}(x_i)).\\end{gathered}",
-          "explanation": "\\(\\hat f^{(-i)}\\) est appris sans l’observation \\(i\\). Le calcul demande \\(n\\) ajustements ; il est surtout adapté aux petits échantillons."
+          "explanation": "\\(\\hat f^{(-i)}\\) : appris sans l’observation \\(i\\). \\(n\\) ajustements : pour petits échantillons."
         }
       ]
     },
@@ -664,7 +688,7 @@ window.SID34_CHAPTER_1 = {
       "id": "categorisation",
       "title": "Catégorisation",
       "duration": 5,
-      "intro": "Organiser les méthodes et expliciter notre perspective : des algorithmes linéaires aux méthodes non linéaires, puis à l’agrégation.",
+      "intro": "Du linéaire au non linéaire, puis à l’agrégation.",
       "objective": "Situer la progression SID34 et justifier le choix d’un premier modèle simple.",
       "blocks": [
         {
@@ -679,24 +703,24 @@ window.SID34_CHAPTER_1 = {
           "title": "Notre perspective",
           "src": "assets/lecture1/here.png",
           "alt": "La même carte des méthodes, avec l’axe linéarité et ses branches Linear et Nonlinear entourés en rouge.",
-          "caption": "Notre perspective : organiser l’étude des modèles selon l’axe linéaire / non linéaire."
+          "caption": "Notre perspective : l’axe linéaire / non linéaire."
         },
         {
           "type": "callout",
           "title": "Précision sur le support",
-          "html": "<p><strong>Paramétrique</strong> désigne un modèle décrit par un nombre fixé de paramètres ; cela n’impose pas une loi gaussienne. <strong>Non paramétrique</strong> ne signifie pas sans hypothèses, ni moins puissant par principe. Un <strong>modèle linéaire</strong> n’exige pas une séparation parfaite des classes.</p>"
+          "html": "<ul><li><strong>Paramétrique</strong> : nombre fixé de paramètres, pas forcément gaussien.</li><li><strong>Non paramétrique</strong> : ni sans hypothèses, ni moins puissant par principe.</li><li>Un <strong>modèle linéaire</strong> n’exige pas une séparation parfaite.</li></ul>"
         },
         {
           "type": "prose",
           "title": "Pourquoi ce choix ?",
-          "html": "<p>Le classement <strong>linéaire / non linéaire</strong> aide à comprendre le compromis biais–variance et à choisir une complexité appropriée à la taille et à la structure des données.</p><p>Il permet une démarche progressive : commencer par un <strong>modèle linéaire simple</strong> pour poser les bases, puis aller vers un <strong>modèle non linéaire</strong> si les données le justifient.</p>"
+          "html": "<p>L’axe <strong>linéaire / non linéaire</strong> éclaire le compromis biais–variance et le choix d’une complexité adaptée aux données.</p><p>Commencer par un <strong>modèle linéaire simple</strong> ; passer à un <strong>modèle non linéaire</strong> si les données le justifient.</p>"
         },
         {
           "type": "figure",
           "title": "Guide selon Scikit-learn",
           "src": "assets/lecture1/sci.png",
           "alt": "Arbre d’orientation scikit-learn répartissant les méthodes entre classification, régression, clustering et réduction de dimension.",
-          "caption": "Guide repris du support : situer les familles de méthodes selon la tâche et les données, puis confronter le choix à la validation."
+          "caption": "Familles de méthodes selon la tâche et les données ; valider ensuite le choix."
         },
         {
           "type": "prose",
@@ -719,7 +743,7 @@ window.SID34_CHAPTER_1 = {
         {
           "type": "callout",
           "title": "Next : Algorithmes linéaires",
-          "html": "<p>Le chapitre suivant reprend ces notions pour étudier les <strong>algorithmes linéaires</strong> : leur géométrie, leurs fonctions de prévision et les critères utilisés pour apprendre.</p>"
+          "html": "<p>Chapitre suivant : les <strong>algorithmes linéaires</strong> (géométrie, prévision, critères d’apprentissage).</p>"
         }
       ]
     }

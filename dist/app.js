@@ -5,6 +5,8 @@
   // Chapitres publiés et chapitres annoncés « à venir » (copie étudiants : chapitre 2 sans contenu).
   const ready = chapters.filter(chapter => !chapter.comingSoon), soon = chapters.filter(chapter => chapter.comingSoon);
   const soonBadge = '<span class="soon-badge">À venir</span>';
+  // Chapitres suivants du programme, annoncés dans le menu et le plan.
+  const announced = [...soon, {number: '03', title: 'Algorithmes non linéaires'}, {number: '04', title: 'Agrégation'}, {number: '05', title: 'Cycle ML & Métriques d’évaluation'}];
   const main = document.getElementById('main');
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebar-backdrop');
@@ -73,7 +75,7 @@
         const status = window.SID34Progress ? window.SID34Progress.status(key) : 'new';
         return '<a class="lesson-link' + (key === active ? ' active' : '') + '" href="' + lessonURL(chapter, lesson) + '"' + (key === active ? ' aria-current="page"' : '') + '><span class="lesson-dot is-' + status + '" aria-hidden="true"></span><span>' + escape(lesson.title) + (lesson.fresh ? ' ' + freshBadge : '') + '</span></a>';
       }).join('') + (window.SID34Teaching?.td[chapter.id] ? '<a class="lesson-link td-nav' + (active === 'td/' + chapter.id ? ' active' : '') + '" href="#td/' + chapter.id + '"><span class="lesson-dot" aria-hidden="true"></span><span>TD</span></a>' : '') + '</details>'
-    ).join('') + soon.map(chapter => '<div class="chapter-nav is-soon"><span class="chapter-nav-title"><span class="chapter-number">' + escape(chapter.number) + '</span><span>' + escape(chapter.title) + '</span>' + soonBadge + '</span></div>').join('') + '<div class="drawer-links"><a href="#cours">Vue d’ensemble du cours</a><a href="#ressources">Ressources et PDF</a></div>';
+    ).join('') + announced.map(chapter => '<div class="chapter-nav is-soon"><span class="chapter-nav-title"><span class="chapter-number">' + escape(chapter.number) + '</span><span>' + escape(chapter.title) + '</span>' + soonBadge + '</span></div>').join('') + '<div class="drawer-links"><a href="#cours">Vue d’ensemble du cours</a><a href="#ressources">Ressources et PDF</a></div>';
     if (!sidebar.classList.contains('open')) sidebar.inert = true;
   }
 
@@ -96,8 +98,8 @@
           const tags = [lesson.duration + ' min'];
           return '<li><a href="' + lessonURL(chapter, lesson) + '">' + progressNode(chapter, lesson, i + 1) + '<span class="plan-title">' + escape(lesson.title) + (lesson.fresh ? ' ' + freshBadge : '') + '</span><span class="plan-tags">' + tags.join(' · ') + '</span></a></li>';
         }).join('') + '</ol></section>').join('') +
-      soon.map(chapter => '<section class="plan-chapter is-soon"><div class="plan-chapter-head"><span class="chapter-number">' + escape(chapter.number) + '</span><div><h2>' + escape(chapter.title) + ' ' + soonBadge + '</h2></div></div></section>').join('') +
-      '<section class="plan-upcoming"><h2>La suite du programme</h2><ol start="3"><li>Algorithmes non linéaires</li><li>Agrégation</li><li>Cycle ML & Métriques d’évaluation</li></ol></section>' + (window.SID34Progress?.any() ? '<p class="progress-note">Votre progression reste sur cet appareil. <button type="button" class="text-button" data-sid34-action="reset-progress">Effacer ma progression</button></p>' : '') + footer() + '</div>';
+      announced.map(chapter => '<section class="plan-chapter is-soon"><div class="plan-chapter-head"><span class="chapter-number">' + escape(chapter.number) + '</span><div><h2>' + escape(chapter.title) + ' ' + soonBadge + '</h2></div></div></section>').join('') +
+      (window.SID34Progress?.any() ? '<p class="progress-note">Votre progression reste sur cet appareil. <button type="button" class="text-button" data-sid34-action="reset-progress">Effacer ma progression</button></p>' : '') + footer() + '</div>';
     renderSidebar();
   }
 

@@ -26,6 +26,7 @@
     }
   };
   const redrawnAlts = {
+    rec:'Six chiffres manuscrits avec leurs étiquettes 9, 6, 6, 5, 4 et 0 ; la dernière image est encadrée comme entrée xᵢ, son étiquette 0 comme sortie yᵢ.',
     regression:'Illustration synthétique : courbe de moyenne conditionnelle, observations dispersées et plusieurs sorties possibles à la même entrée x₀ = 4 ; le point sur la courbe marque la moyenne conditionnelle −0,08.',
     lossff:'Comparaison de la demi-perte quadratique et de la perte charnière appliquée au score continu g, pour les labels −1 et +1.',
     ols:'Illustration schématique : observations, droite de prévision et carrés représentant les résidus verticaux au carré.',
@@ -41,7 +42,7 @@
     trade:'Trois ajustements polynomiaux sur les mêmes observations synthétiques, avec les erreurs d’apprentissage et de validation.',
     reglin:'Exemple synthétique de moindres carrés : droite apprise, résidus verticaux et courbes d’égale RSS dans l’espace des paramètres.'
   };
-  const redrawn = new Set(['regression','lossff','ols','jackpot','jacknot','split','k-block','hyperp','margin','dis','categ','here','trade','reglin']);
+  const redrawn = new Set(['regression','lossff','ols','jackpot','jacknot','split','k-block','hyperp','margin','dis','categ','here','trade','reglin','rec']);
   for (const chapter of [window.SID34_CHAPTER_1,window.SID34_CHAPTER_2]) {
     let originalNumber = 0;
     for (const lesson of chapter.lessons) {

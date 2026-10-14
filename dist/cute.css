@@ -205,3 +205,10 @@
 .soon-badge { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: #fdf3dc; color: #8a6417; font: 700 12px/1.6 var(--sans, Roboto, sans-serif); letter-spacing: .02em; vertical-align: middle; white-space: nowrap; }
 .chapter-nav.is-soon .chapter-nav-title { display: flex; align-items: center; gap: 8px; padding: 10px 0; color: var(--muted, #6e7380); cursor: default; }
 .plan-chapter.is-soon h2 { color: var(--muted, #6e7380); }
+
+
+.plan-chapter.is-soon { margin-top: 14px; }
+.plan-chapter.is-soon + .plan-chapter.is-soon { margin-top: 0; }
+.plan-chapter.is-soon .plan-chapter-head { padding: 6px 0; }
+.plan-chapter.is-soon h2 { font-size: 22px; }
+.chapter-nav.is-soon .chapter-nav-title::after, .chapter-nav.is-soon .chapter-nav-title::before { content: none; display: none; }
