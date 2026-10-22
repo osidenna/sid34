@@ -282,6 +282,123 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
           ]
         }
       ]
+    },
+    lineaires: {
+      title: 'TD 2 · Algorithmes linéaires',
+      lead: 'Trois problèmes sur papier, puis la vérification des hypothèses en Python.',
+      duration: '1 h 20',
+      notebook: 'sid34-td2-lineaires.ipynb',
+      exercises: [
+        {
+          n: 4, title: 'Vérifier les hypothèses de la régression linéaire', lesson: 'logistique', minutes: 30,
+          parts: [
+            {ai: 'off'},
+            {p: 'Quatre hypothèses : **linéarité**, **indépendance** des erreurs, **variance constante**, **normalité** des erreurs. On les vérifie avec un graphique chacune, puis un test.'},
+            {cell: {id: 'hyp7data', code: String.raw`import numpy as np
+from scipy import stats
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(0)
+n = 80
+heures = rng.uniform(1, 10, n)
+note = 6 + 1.2 * heures + rng.normal(0, 1.2, n)
+
+b1, b0 = np.polyfit(heures, note, 1)
+ajuste = b0 + b1 * heures
+residus = note - ajuste
+print(f"Droite : note = {b0:.2f} + {b1:.2f} × heures")`, expected: 'Droite : note = 6.27 + 1.15 × heures'}},
+            {h: '1 · Un graphique par hypothèse'},
+            {cell: {id: 'hyp7plots', code: String.raw`fig, ax = plt.subplots(2, 2, figsize=(9, 7))
+ax[0, 0].scatter(heures, note, s=14); ax[0, 0].plot(np.sort(heures), b0 + b1 * np.sort(heures), color="purple")
+ax[0, 0].set_title("Linéarité : nuage et droite")
+ax[0, 1].scatter(ajuste, residus, s=14); ax[0, 1].axhline(0, color="gray")
+ax[0, 1].set_title("Variance constante : résidus / valeurs ajustées")
+stats.probplot(residus, plot=ax[1, 0]); ax[1, 0].set_title("Normalité : diagramme quantile-quantile")
+ax[1, 1].plot(residus[np.argsort(heures)], marker="o", ms=3); ax[1, 1].axhline(0, color="gray")
+ax[1, 1].set_title("Indépendance : résidus dans l’ordre des heures")
+plt.tight_layout(); plt.show()`}},
+            {ol: [
+              'Nuage : les points suivent-ils une droite, ou une courbe ?',
+              'Résidus / valeurs ajustées : voyez-vous une forme (courbe, entonnoir) ou un nuage sans structure autour de 0 ?',
+              'Diagramme quantile-quantile : les points sont-ils proches de la droite ?',
+              'Résidus dans l’ordre : y a-t-il de longues séries de même signe ?'
+            ]},
+            {h: '2 · Un test par hypothèse'},
+            {cell: {id: 'hyp7tests', code: String.raw`def tests(x, r):
+    _, p_sw = stats.shapiro(r)                       # normalité
+    e2 = r**2                                        # Breusch-Pagan : variance constante
+    c1, c0 = np.polyfit(x, e2, 1)
+    r2 = 1 - np.sum((e2 - (c0 + c1 * x))**2) / np.sum((e2 - e2.mean())**2)
+    p_bp = stats.chi2.sf(len(x) * r2, 1)
+    ro = r[np.argsort(x)]                            # Durbin-Watson : indépendance
+    dw = np.sum(np.diff(ro)**2) / np.sum(ro**2)
+    print(f"Shapiro-Wilk (normalité) : p = {p_sw:.3f}")
+    print(f"Breusch-Pagan (variance constante) : p = {p_bp:.3f}")
+    print(f"Durbin-Watson (indépendance) : {dw:.2f}")
+
+tests(heures, residus)`, expected: 'Shapiro-Wilk (normalité) : p = 0.609\nBreusch-Pagan (variance constante) : p = 0.380\nDurbin-Watson (indépendance) : 1.85'}},
+            {box: {title: 'Lire un test', parts: [
+              {ul: [
+                'Hypothèse nulle $H_0$ : « l’hypothèse du modèle est respectée ».',
+                'Si $p<0{,}05$, on rejette $H_0$ : l’hypothèse semble violée.',
+                'Si $p\\ge0{,}05$, on ne la rejette pas : rien ne la contredit (ce n’est pas une preuve qu’elle est vraie).',
+                'Durbin-Watson : proche de 2, pas d’autocorrélation ; vers 0 ou 4, des erreurs liées.'
+              ]}
+            ]}},
+            {h: '3 · À vous : un deuxième jeu de données'},
+            {p: 'Ici, l’écart des notes grandit avec les heures. Tracez le graphique des résidus contre les valeurs ajustées, lancez `tests`, et dites quelle hypothèse tombe.'},
+            {cell: {id: 'hyp7jeu2', todo: true, code: String.raw`note2 = 6 + 1.2 * heures + rng.normal(0, 0.3 * heures, n)
+# 1. Ajuster la droite, calculer ajuste2 et residus2
+# 2. Graphique : residus2 en fonction de ajuste2
+# 3. tests(heures, residus2)
+`}},
+            {ol: [
+              'Quelle forme a le nuage des résidus ? Que dit Breusch-Pagan ?',
+              'Les coefficients restent-ils utilisables ? Et les intervalles de confiance habituels ?'
+            ]}
+          ],
+          hint: [{p: 'Résidus / valeurs ajustées : un entonnoir signale une variance qui change. Pour le jeu 2, reprendre exactement les lignes du jeu 1 avec `note2`.'}]},
+        {
+          n: 5, title: 'Régression logistique', lesson: 'logistique', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {p: String.raw`Un modèle logistique a appris $w=(1{,}37\,;\,-0{,}22)$ et $b=-8{,}75$. Un animal pèse $8$ kg et son pelage mesure $3$ cm.`},
+            {ol: [
+              String.raw`Calculer le score $z$ et la probabilité $\hat p=\sigma(z)$ d’être un chien. On donne $\sigma(1{,}55)\approx0{,}825$.`,
+              String.raw`Donner la classe prédite pour $t=0{,}5$ puis pour $t=0{,}9$.`,
+              String.raw`Montrer que $\sigma(z)\ge t \iff z\ge\log\frac{t}{1-t}$. En déduire le score minimal pour être classé chien avec $t=0{,}7$.`,
+              String.raw`L’animal est en fait un chat. Calculer sa perte d’entropie croisée.`
+            ]}
+          ],
+          hint: [{p: String.raw`$\sigma$ est croissante. Pour un chat, $y=0$ et $\ell=-\log(1-\hat p)$.`}]},
+        {
+          n: 6, title: 'Un SVM à la main', lesson: 'marge-souple', minutes: 20,
+          parts: [
+            {ai: 'off'},
+            {p: String.raw`Un SVM a appris $w=(1\,;\,-0{,}25)$ et $b=-5{,}5$, avec chat $y=-1$ et chien $y=+1$. On donne $\|w\|\approx1{,}031$.`},
+            {table: {head: ['Animal', 'Espèce', 'Poids $x_1$', 'Pelage $x_2$'], rows: [
+              ['A', 'chat', '4,6', '5,0'], ['B', 'chien', '9,0', '2,6'], ['C', 'chat', '6,0', '3,0'], ['D', 'chien', '5,8', '4,0']]}},
+            {ol: [
+              String.raw`Calculer $g(x)$ et $y\,g(x)$ pour les quatre animaux. Lesquels sont bien classés ?`,
+              String.raw`Calculer la distance de A à la frontière et la largeur de la marge.`,
+              String.raw`On multiplie $w$ et $b$ par $2$. Que deviennent $g(A)$, $\|w\|$ et la distance de A ?`,
+              String.raw`Calculer $\xi=\max\big(0,1-y\,g(x)\big)$ pour chaque animal. Lesquels sont dans la marge ? du mauvais côté ?`
+            ]}
+          ],
+          hint: [{p: String.raw`Pour A : $g=4{,}6-0{,}25\times5-5{,}5$. Un chat a $y=-1$, donc $y\,g(x)=-g(x)$.`}]},
+        {
+          n: 7, title: 'Le dual sur deux points', lesson: 'marge-souple', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {p: String.raw`Deux observations : $x_1=(1,1)$ avec $y_1=+1$, et $x_2=(-1,-1)$ avec $y_2=-1$. On cherche le SVM à marge dure.`},
+            {ol: [
+              String.raw`À l’aide de $w=\sum_i\alpha_iy_ix_i$ et $\sum_i\alpha_iy_i=0$, exprimer $w$ en fonction d’un seul $\alpha$.`,
+              String.raw`Les deux points sont des vecteurs de support : $y_i\,g(x_i)=1$. En déduire $\alpha$, $w$ et $b$.`,
+              String.raw`Calculer la largeur de la marge $2/\|w\|$ et la comparer à la distance entre les deux points.`
+            ]}
+          ],
+          hint: [{p: String.raw`$\alpha_1y_1+\alpha_2y_2=0$ donne $\alpha_1=\alpha_2$.`}]}
+      ]
     }
   };
 

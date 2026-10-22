@@ -31,7 +31,7 @@
     String.raw`Point \(A=(3,4)\) : \(g(A)=2\times3+4=10>0\), côté positif.`,
     String.raw`Norme : \(\|w\|=\sqrt{2^2+1^2}=\sqrt5\approx2{,}24\).`,
     String.raw`Distance : \(d(A)=\dfrac{|g(A)|}{\|w\|}=\dfrac{10}{\sqrt5}=2\sqrt5\approx4{,}47\).`,
-    String.raw`Bords \(g(x)=\pm1\) : largeur de la marge \(\dfrac2{\|w\|}=\dfrac2{\sqrt5}\approx0{,}89\).`]));
+    String.raw`Bords \(g(x)=\pm1\) : largeur de la marge \(\dfrac2{\|w\|}=\dfrac2{\sqrt5}\approx0{,}89\).`]).concat([{type: 'figure', src: 'assets/redrawn/exemple-distance.svg', alt: 'Droite 2x1 + x2 = 0, vecteur w = (2,1), point A = (3,4) du côté positif, distance 2√5.', caption: String.raw`Le côté positif est celui vers lequel pointe \(w\) : là, \(g(x)>0\). A y est, à la distance \(2\sqrt5\) de la droite.`}]));
   const dualExample = worked('marge-souple-exemple', 'Exemple pas à pas', steps('Le dual sur deux points', [
     String.raw`Données : \(x_1=(2,0)\), \(y_1=+1\) ; \(x_2=(0,0)\), \(y_2=-1\).`,
     String.raw`\(\sum_i\alpha_iy_i=0\) donne \(\alpha_1=\alpha_2=\alpha\), puis \(w=\alpha x_1-\alpha x_2=(2\alpha,0)\).`,
@@ -125,7 +125,8 @@
       F(String.raw`\mathcal L(w,b,\alpha)=\tfrac12\|w\|^2-\sum_{i=1}^{m}\alpha_i\big[y_i(w\cdot x_i+b)-1\big]`)]),
     worked('svm-hm-kkt', 'Les conditions KKT', [
       F(String.raw`\begin{aligned}\nabla_w\mathcal L=w-\textstyle\sum_i\alpha_iy_ix_i=0&\ \Longrightarrow\ w=\textstyle\sum_i\alpha_iy_ix_i\\\nabla_b\mathcal L=-\textstyle\sum_i\alpha_iy_i=0&\ \Longrightarrow\ \textstyle\sum_i\alpha_iy_i=0\\\forall i,\ \alpha_i\big[y_i(w\cdot x_i+b)-1\big]=0&\ \Longrightarrow\ \alpha_i=0\ \text{ou}\ y_i(w\cdot x_i+b)=1\end{aligned}`),
-      P(String.raw`<p>Ces trois conditions donnent la solution \((w^*,b^*,\alpha^*)\). La dernière dit : soit \(\alpha_i=0\), soit le point est <strong>sur le bord</strong> — un vecteur de support.</p>`)]),
+      P(String.raw`<p>Ces trois conditions donnent la solution \((w^*,b^*,\alpha^*)\). La dernière dit : soit \(\alpha_i=0\), soit le point est <strong>sur le bord</strong> — un vecteur de support.</p>`),
+      {type: 'callout', title: 'Pourquoi les KKT garantissent l’optimum', html: String.raw`<p>En général, les conditions KKT sont seulement <strong>nécessaires</strong> : un optimum les vérifie, mais un point qui les vérifie n’est pas forcément optimal.</p><p>Ici, l’objectif \(\tfrac12\|w\|^2\) est <strong>convexe</strong> et les contraintes sont <strong>affines</strong> (et réalisables quand les données sont séparables). Dans ce cas, les KKT deviennent aussi <strong>suffisantes</strong> : tout point qui les vérifie est <strong>le minimum global</strong>. Pas de minimum local trompeur.</p><p>Intuition : un problème convexe est une « cuvette » ; les KKT disent qu’on est au fond, compte tenu des murs que forment les contraintes.</p>`}]),
     worked('svm-hm-dual', 'Obtenir le dual en 3 étapes', [P(String.raw`<ol>
       <li><strong>Introduire</strong> un multiplicateur \(\alpha_i\ge0\) par contrainte : \(\mathcal L=\text{objectif}-\sum_i\alpha_i\,(\text{contrainte}_i)\).</li>
       <li><strong>Minimiser</strong> en \((w,b)\) : on obtient \(w=\sum_i\alpha_iy_ix_i\) et \(\sum_i\alpha_iy_i=0\). En remplaçant, \(\|w\|^2=\sum_{i,j}\alpha_i\alpha_jy_iy_j\,(x_i\cdot x_j)\) et le terme en \(b\) disparaît.</li>
