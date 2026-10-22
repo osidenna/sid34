@@ -223,3 +223,7 @@
   .as-scrolly .as-step:last-child { min-height: calc(100vh - 16px); }
   .as-scrolly .as-plot { max-width: max(260px, calc((100vh - 320px) * 1.26)); margin-inline: auto; }
 }
+
+.as-loss-big { padding: 14px 16px; border-radius: 16px; background: #f8f2f9; text-align: center; }
+.as-loss-big small { display: block; font-size: 12px; letter-spacing: .12em; color: #8a4f8c; font-weight: 700; }
+.as-loss-big strong { font: 700 40px/1.1 var(--serif, Bitter, serif); color: #1d2433; }

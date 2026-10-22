@@ -38,7 +38,7 @@
     blocks: [
       {type: 'prose', title: 'Pourquoi une probabilité ?', html: String.raw`<p>Pour une réponse binaire \(y\in\{0,1\}\), une droite de régression peut prédire \(1{,}4\) ou \(-0{,}3\) : ce ne sont pas des probabilités. La <strong>régression logistique</strong> garde un <strong>score linéaire</strong> et le transforme en probabilité.</p>`},
       {type: 'formula', tex: String.raw`\begin{aligned}\log\frac{P(Y=1\mid X=x)}{1-P(Y=1\mid X=x)}&=w^{\top}x+b,\\P(Y=1\mid X=x)&=\sigma(w^{\top}x+b)\\&=\frac{1}{1+e^{-(w^{\top}x+b)}}.\end{aligned}`,
-        explanation: String.raw`Le logarithme de la cote (log-odds) est linéaire en \(x\) : c’est l’hypothèse annoncée dans le tableau des modèles linéaires supervisés.`},
+        explanation: String.raw`Le logarithme des odds (log-odds) est linéaire en \(x\) : c’est l’hypothèse annoncée dans le tableau des modèles linéaires supervisés.`},
       {type: 'callout', title: 'Fil rouge jusqu’aux SVM', html: String.raw`<p>Les mêmes 40 animaux synthétiques servent dans tout le chapitre : poids \(x_{1}\), pelage \(x_{2}\), chat \(=0\), chien \(=1\).</p>`},
       {type: 'logistic-story'},
       {type: 'animal-split-story'},
@@ -88,6 +88,13 @@
   const lossStart = tail(ch1, 'fonction-perte', 'loss-story');
   const riskStart = tail(ch1, 'risque', 'risk-story');
   const geoStart = tail(ch2, 'geometrie', 'geometrie-story');
+  const linStart = tail(ch2, 'geometrie', 'linearity-story');
+  const llStart = tail(ch2, 'logistique', 'linlog-story');
+  // SVM dans l'ordre « simply explained » : équation d'une droite, forme générale, puis distance.
+  const lineStart = live2 ? lesson(ch2, 'svm-geometrie').blocks.length : 0;
+  if (live2) lesson(ch2, 'svm-geometrie').blocks.push(
+    {type: 'prose', title: 'D’une droite à sa forme générale', html: String.raw`<p>Au lycée, une droite s’écrit \(x_2=m\,x_1+c\) : pente \(m\), ordonnée à l’origine \(c\).</p><p>On passe tout du même côté : \(m\,x_1-x_2+c=0\). C’est la <strong>forme générale</strong> \(w_1x_1+w_2x_2+b=0\), avec \(w=(m,-1)\) et \(b=c\).</p>`},
+    {type: 'formula', tex: String.raw`x_2=-2x_1+1\iff 2x_1+x_2-1=0,\qquad w=(2,1),\ b=-1`, explanation: String.raw`La forme générale marche aussi pour une droite verticale (\(w_2=0\)), et elle donne directement le vecteur normal \(w\) et le score \(g(x)=w^{\top}x+b\).`});
   const distStart = tail(ch2, 'svm-geometrie', 'distance-story');
   const slackStart = tail(ch2, 'marge-souple', 'slack-story');
   const dualStart = tail(ch2, 'dualite', 'dual-story');
@@ -113,9 +120,9 @@
         'estimation-risque': {after: 4, slides: [['La validation croisée pas à pas', [erStart], {fresh: true}]]}
       },
       lineaires: !live2 ? {} : {
-        logistique: {replace: [['Pourquoi une probabilité ?', [0, 1, 2], {fresh: true}], ['De la mesure à la décision', [3], {fresh: true}], ['Apprendre, valider, tester', [4], {fresh: true}], ['Notations du fil rouge', [5], {fresh: true}], ['À faire · un calcul à la main', [6], {extra: true, fresh: true}]]},
-        geometrie: {...pas('geometrie', 'Hyperplan pas à pas', geoStart), after: 2},
-        'svm-geometrie': {inserts: [{after: 0, slides: [['Étiquettes du SVM', [sgStart, sgStart + 1], {fresh: true}]]}, {...pas('svm-geometrie', 'Du score à la distance pas à pas', distStart), after: 1}]},
+        logistique: {replace: [['Pourquoi une probabilité ?', [0, 1, 2], {fresh: true}], ['De la mesure à la décision', [3], {fresh: true}], ['Apprendre, valider, tester', [4], {fresh: true}], ['Notations du fil rouge', [5], {fresh: true}], ['À faire · un calcul à la main', [6], {extra: true, fresh: true}], ['De la régression linéaire à la logistique', [llStart], {fresh: true, id: 'logistique-intro'}]]},
+        geometrie: {inserts: [{after: -1, slides: [['Linéaire en quoi ?', [linStart], {fresh: true, id: 'geometrie-lineaire'}]]}, {...pas('geometrie', 'Hyperplan pas à pas', geoStart), after: 2}]},
+        'svm-geometrie': {inserts: [{after: 99, slides: [['Équation d’une droite', [lineStart, lineStart + 1], {fresh: true, id: 'svm-geometrie-droite'}]]}, {after: 0, slides: [['Étiquettes du SVM', [sgStart, sgStart + 1], {fresh: true}]]}, {...pas('svm-geometrie', 'Du score à la distance pas à pas', distStart), after: 1}]},
         'marge-souple': {...pas('marge-souple', 'Les relâchements pas à pas', slackStart), after: 0},
         dualite: {...pas('dualite', 'Les multiplicateurs pas à pas', dualStart), after: 0},
         'hard-soft': {after: 0, slides: [['De la probabilité à la marge', [hsStart], {fresh: true}]]},

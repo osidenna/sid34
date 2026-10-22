@@ -224,6 +224,14 @@
       q('En OvR, comment décide-t-on la classe ?', [ok(String.raw`La classe au plus grand score \(g_k(x)\)`), no('Par le vote des duels', 'Le vote des duels, c’est OvO.'), no('La première classe au score positif', 'Plusieurs scores peuvent être positifs, ou aucun : on prend le plus grand.')], String.raw`\(\hat y=\arg\max_k g_k(x)\).`)]
   };
 
+  // Chapitre 2 en cinq parties (chapter2-plan.js).
+  CHECKS.modeles = CHECKS.supervises;
+  CHECKS.acp = [
+    q('Que maximise le premier axe de l’ACP ?', [ok('La variance des projections'), no('Le nombre d’erreurs de classification', 'L’ACP n’utilise aucune étiquette : il n’y a pas d’erreur à compter.'), no('La distance au point le plus proche', 'Ça, c’est la marge du SVM.')]),
+    q(String.raw`Valeurs propres \(\lambda_1=3\), \(\lambda_2=1\) : quelle part de variance garde l’axe 1 ?`, [ok('75 %'), no('3 %', String.raw`On divise par la somme : \(3/(3+1)\).`), no('100 %', String.raw`L’axe 2 garde encore \(1/4\) de la variance.`)])
+  ];
+  CHECKS['svm-marge'] = [CHECKS['svm-geometrie'][1], CHECKS['marge-dure'][1]];
+
   function check(host, chapter, lesson) {
     const own = CHECKS[lesson.id];
     if (!host || !own) return;

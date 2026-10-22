@@ -28,7 +28,7 @@
   let tdTarget = '';
   const imageViewer = document.getElementById('image-viewer');
   const icon=(name)=>window.CourseIcons.icon(name);
-  const storyNames = {'svm-story':'SVMStory','regression-story':'RegressionStory','split-story':'SplitStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
+  const storyNames = {'svm-story':'SVMStory','regression-story':'RegressionStory','split-story':'SplitStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
   const plain = value => window.SID34Math ? window.SID34Math.plain(value) : String(value || '');
   const mathIn = root => { if (window.SID34Math) window.SID34Math.render(root); return root; };
   const mathLive = root => { if (window.SID34Math) { window.SID34Math.render(root); window.SID34Math.observe(root); } return root; };
@@ -76,7 +76,7 @@
         const key = chapter.id + '/' + lesson.id;
         const status = window.SID34Progress ? window.SID34Progress.status(key) : 'new';
         return '<a class="lesson-link' + (key === active ? ' active' : '') + '" href="' + lessonURL(chapter, lesson) + '"' + (key === active ? ' aria-current="page"' : '') + '><span class="lesson-dot is-' + status + '" aria-hidden="true"></span><span>' + escape(lesson.title) + (lesson.fresh ? ' ' + freshBadge : '') + '</span></a>';
-      }).join('') + (window.SID34Teaching?.td[chapter.id] ? '<a class="lesson-link td-nav' + (active === 'td/' + chapter.id ? ' active' : '') + '" href="#td/' + chapter.id + '"><span class="lesson-dot" aria-hidden="true"></span><span>TD</span></a>' : '') + '</details>'
+      }).join('') + (window.SID34TD?.sheets?.[chapter.id] ? '<a class="lesson-link td-nav' + (active === 'td/' + chapter.id ? ' active' : '') + '" href="#td/' + chapter.id + '"><span class="lesson-dot" aria-hidden="true"></span><span>TD</span></a>' : '') + '</details>'
     ).join('') + announced.map(chapter => '<div class="chapter-nav is-soon"><span class="chapter-nav-title"><span class="chapter-number">' + escape(chapter.number) + '</span><span>' + escape(chapter.title) + '</span>' + soonBadge(chapter) + '</span></div>').join('') + '<div class="drawer-links"><a href="#cours">Vue d’ensemble du cours</a><a href="#ressources">Ressources et PDF</a></div>';
     if (!sidebar.classList.contains('open')) sidebar.inert = true;
   }
@@ -93,7 +93,7 @@
     const plural = (n, word) => n + ' ' + word + (n > 1 ? 's' : '');
     const total = {lessons: allLessons.length, slides: chapters.reduce((s, c) => s + c.slideCount, 0), experiments: allLessons.reduce((s, x) => s + experiments(x.lesson), 0), quiz: allLessons.reduce((s, x) => s + (teaching ? teaching.pitfallCount(x.chapter.id + '/' + x.lesson.id) : 0), 0), td: teaching ? Object.values(teaching.td).flat().length : 0};
     main.innerHTML = '<div class="content"><header class="lesson-header"><div class="eyebrow">Apprentissage statistique · 2026–2027</div><h1>Le plan du cours</h1></header>' + resumeCard() +
-      ready.map(chapter => '<section class="plan-chapter"><div class="plan-chapter-head"><span class="chapter-number">' + escape(chapter.number) + '</span><div><h2><a href="' + lessonURL(chapter, chapter.lessons[0]) + '">' + escape(chapter.title) + '</a></h2><p>' + escape(chapter.subtitle) + '</p><p class="lesson-count">' + chapter.lessons.length + ' parties · ' + chapter.duration + ' min · <a class="text-button" href="' + chapterPDF(chapter) + '" download>Notes PDF</a>' + (teaching?.td[chapter.id] ? ' · <a class="text-button" href="#td/' + chapter.id + '">TD</a>' : '') + '</p></div></div>' +
+      ready.map(chapter => '<section class="plan-chapter"><div class="plan-chapter-head"><span class="chapter-number">' + escape(chapter.number) + '</span><div><h2><a href="' + lessonURL(chapter, chapter.lessons[0]) + '">' + escape(chapter.title) + '</a></h2><p>' + escape(chapter.subtitle) + '</p><p class="lesson-count">' + chapter.lessons.length + ' parties · ' + chapter.duration + ' min · <a class="text-button" href="' + chapterPDF(chapter) + '" download>Notes PDF</a>' + (window.SID34TD?.sheets?.[chapter.id] ? ' · <a class="text-button" href="#td/' + chapter.id + '">TD</a>' : '') + '</p></div></div>' +
         '<ol class="plan-lessons">' + chapter.lessons.map((lesson, i) => {
           const key = chapter.id + '/' + lesson.id, n = experiments(lesson), q = teaching ? teaching.pitfallCount(key) : 0;
           const count=window.SID34_CLASSROOM.entries(chapter).filter(entry=>entry.lesson===lesson).length;
@@ -115,7 +115,7 @@
 
   function tdLink(kind) {
     const target = window.SID34Teaching?.tdFor(kind);
-    if (!target) return '';
+    if (!target || !window.SID34TD?.sheets?.[target.chapter]) return '';
     return '<a class="td-link" href="#td/' + target.chapter + '/' + target.ex.id.replace('.', '-') + '"><span>Refaire ce calcul en Python</span><strong>' + escape(target.ex.title) + ' →</strong></a>';
   }
 
@@ -314,7 +314,7 @@
     const nextCard = next
       ? '<a class="lesson-nav-card is-next" href="' + lessonURL(next.chapter, next.lesson) + '"><span class="lesson-nav-label">' + (next.chapter.id === chapter.id ? 'Partie suivante' : 'Chapitre suivant') + icon('next') + '</span><strong>' + escape(next.lesson.title) + '</strong></a>'
       : '<a class="lesson-nav-card is-next" href="#cours"><span class="lesson-nav-label">Fin des chapitres disponibles' + icon('next') + '</span><strong>Revenir au plan du cours</strong></a>';
-    const tdHref = teaching && teaching.td[chapter.id] ? '#td/' + chapter.id : '';
+    const tdHref = window.SID34TD?.sheets?.[chapter.id] ? '#td/' + chapter.id : '';
     main.innerHTML = '<article class="content"><nav class="breadcrumb" aria-label="Fil d’Ariane"><a href="#cours">Le cours</a><span aria-hidden="true">/</span><a href="' + lessonURL(chapter, chapter.lessons[0]) + '">' + escape(chapter.title) + '</a><span aria-hidden="true">/</span><span>Partie ' + (index + 1) + '</span></nav>' +
       '<header class="lesson-header"><div class="eyebrow">CHAPITRE ' + escape(chapter.number) + ' · PARTIE ' + (index + 1) + ' / ' + chapter.lessons.length + (lesson.fresh ? ' ' + freshBadge : '') + '</div><h1>' + escape(lesson.title) + '</h1><p class="lead">' + escape(lesson.intro) + '</p><p class="lesson-outcome"><strong>À retenir</strong> '+escape(lesson.outcome)+'</p><div class="lesson-meta"><span class="reading-time">' + icon('clock') + lesson.duration + ' min</span><div class="tools"><button class="tool-button" data-sid34-action="present">' + icon('present') + 'Présenter</button><a class="tool-button" href="' + chapterPDF(chapter) + '" download>' + icon('download') + 'Notes PDF</a>' + (tdHref ? '<a class="tool-button" href="' + tdHref + '">' + icon('code') + 'TD</a>' : '') + '</div></div></header>' +
       '<details class="lesson-plan"><summary>Dans cette partie<span class="optional-count">' + lesson.slides.filter(slide=>!slide.extra).length + ' diapositives</span></summary><nav aria-label="Plan de la partie"><ol>' + planItems + '</ol></nav></details>' +
@@ -410,7 +410,7 @@
         {label:'SVM · formulation mathématique (scikit-learn)',url:'https://scikit-learn.org/stable/modules/svm.html#mathematical-formulation'}
       ]}
     ];
-    main.innerHTML = '<div class="content"><header class="lesson-header"><div class="eyebrow">Apprentissage statistique</div><h1>Ressources</h1><p class="lead">Les supports PDF et les références pour réviser le cours.</p></header>' + groups.map(group => '<section class="resource-group"><h2>'+escape(group.title)+'</h2><p>'+escape(group.description)+'</p>'+group.links.map(link => '<a href="'+escape(link.url)+'"'+(link.url.startsWith('#')?'':link.url.endsWith('.pdf')?' download':' target="_blank" rel="noopener"')+'>'+escape(link.label)+' ↗</a>').join('')+'</section>').join('') + (window.SID34_NEW ? '<section class="resource-group" id="notations"><h2>Notations du fil rouge</h2><p>Les symboles des parties sur la régression logistique et les SVM, avec leur signification.</p></section>' : '') + footer() + '</div>';
+    main.innerHTML = '<div class="content"><header class="lesson-header"><div class="eyebrow">Apprentissage statistique</div><h1>Ressources</h1><p class="lead">Les supports PDF et les références pour réviser le cours.</p></header>' + groups.map(group => '<section class="resource-group"><h2>'+escape(group.title)+'</h2><p>'+escape(group.description)+'</p>'+group.links.map(link => '<a href="'+escape(link.url)+'"'+(link.url.startsWith('#')?'':link.url.endsWith('.pdf')?' download':' target="_blank" rel="noopener"')+'>'+escape(link.label)+' ↗</a>').join('')+'</section>').join('') + (window.SID34_NEW ? '<section class="resource-group" id="notations"><h2>Notations du fil rouge</h2><p>Les symboles des parties sur la régression logistique et les SVM, avec leur signification.</p></section>' : '') + (window.goatcounter ? '<p class="progress-note">Mesure d’audience anonyme (GoatCounter) : nombre de pages vues, sans cookie ni donnée personnelle.</p>' : '') + footer() + '</div>';
     const notations = main.querySelector('#notations'); if (notations) notations.appendChild(renderBlock({...window.SID34_NEW.glossary, title: ''}, {}));
     mathIn(main); renderSidebar();
   }
@@ -440,7 +440,7 @@
     let hash;
     try { hash = decodeURIComponent(window.location.hash.slice(1)); } catch (_) { hash = ''; }
     const aliases = {'fondements/probleme-et-donnees':'fondements/introduction-generale','fondements/prevision-et-perte':'fondements/fonction-perte','fondements/risque-et-oracle':'fondements/risque','fondements/risque-empirique':'fondements/risque','fondements/biais-et-variance':'fondements/biais-variance','fondements/validation':'fondements/estimation-risque','lineaires/moindres-carres':'lineaires/supervises','lineaires/svm':'lineaires/marge-dure','lineaires/regularisation':'adaptation','lineaires/pca':'adaptation'};
-    hash = aliases[hash] || hash;
+    hash = aliases[hash] || window.SID34_CH2_ALIASES?.[hash] || hash;
     if (hash === 'main') { main.focus({preventScroll: true}); return; }
     if (!hash) {
       renderLesson(chapters[0], chapters[0].lessons[0]);

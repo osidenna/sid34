@@ -3,7 +3,7 @@
   // A 90-minute route through the existing slides. Reading mode keeps every source
   // slide and its number; focused panels share that number rather than renumbering it.
   const chapters = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2].filter(chapter => chapter && !chapter.comingSoon);
-  const stories = {'svm-story':'SVMStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
+  const stories = {'svm-story':'SVMStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
   const route = {
     fondements: [
       {id:'introduction-generale-8'}, {id:'introduction-generale-9'},
@@ -31,28 +31,15 @@
       {id:'categorisation-6'}
     ],
     lineaires: [
-      {id:'geometrie-2'}, {id:'geometrie-3'}, {id:'geometrie-4',panels:[{title:'À faire · le vecteur normal',indices:[1]}]},
-      {id:'supervises-3'}, {id:'supervises-5'},
-      {id:'logistique-n2', stages:[0,1,2,4,5], formulas:{
-        2:{tex:String.raw`\hat p(x)=\sigma(g(x))`,html:'<p>Probabilité estimée d’être un chien.</p>'},
-        5:{tex:String.raw`\begin{aligned}\ell(y,\hat p)&=-y\log\hat p\\&\quad-(1-y)\log(1-\hat p),\\\min_{w,b}\quad&\tfrac12\|w\|^2+C\sum_i\ell(y_i,\hat p_i).\end{aligned}`,html:String.raw`<p>On apprend \(w,b\) ; on choisit \(C\) sur la validation. Le biais et le seuil ne sont pas pénalisés.</p>`}
-      }},
-      {id:'logistique-n1'},
-      {id:'logistique-n3', stages:[0,1,2,3]},
-      {id:'svm-geometrie-n2'},
-      {id:'svm-geometrie-3', panels:[{title:'Du score à la distance',indices:[0,1,2]}]},
-      {id:'marge-dure-4', stages:[0]},
-      {id:'marge-dure-2'}, {id:'marge-dure-3'},
-      {id:'marge-souple-1', panels:[
-        {title:'Autoriser des violations de marge',indices:[0,1,4]},
-        {title:'Pénaliser les violations',indices:[2,3]}
-      ]},
-      {id:'dualite-1', panels:[
-        {title:'Du Lagrangien à la stationnarité',indices:[0,1],overrides:{1:{tex:String.raw`L(w,b,\alpha)=\tfrac12\|w\|^2+\sum_i\alpha_i\bigl(1-y_i g(x_i)\bigr)`}},formula:{tex:String.raw`\begin{aligned}\nabla_w L=0&\ \Longrightarrow\ w=\sum_i\alpha_i y_i x_i,\\\partial_b L=0&\ \Longrightarrow\ \sum_i\alpha_i y_i=0.\end{aligned}`}},
-        {title:'Le dual et les vecteurs de support',indices:[2,3,5],overrides:{3:{tex:String.raw`\begin{gathered}\max_{\alpha\ge0}\ \sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j(x_i\cdot x_j),\\\text{sous }\sum_i\alpha_i y_i=0.\end{gathered}`}}}
-      ]},
-      {id:'hard-soft-n2', stages:[2,3]},
-      {id:'multiclasses-n2', stages:[0,2,4]}
+      {id:'geometrie-lineaire', stages:[0,2]}, {id:'simple-modele'}, {id:'simple-regclass'}, {id:'simple-erreurs'}, {id:'supervises-6'}, {id:'pertes-recap'},
+      {id:'lr-donnees'}, {id:'lr-modele'}, {id:'lr-perte'}, {id:'lr-solution'}, {id:'lr-predire'},
+      {id:'lg-quoi'}, {id:'lg-loi'}, {id:'lg-lien'}, {id:'why-cote'}, {id:'lg-perte'}, {id:'lg-explorer', stages:[0]}, {id:'lg-train'}, {id:'lg-predire'}, {id:'lg-entrainement-prediction'}, {id:'lg-comparer'}, {id:'lg-resume'},
+      {id:'logistique-n2', stages:[4]}, {id:'logistique-n3', stages:[0,3]},
+      {id:'marge-dure-4', stages:[0]}, {id:'svm-geometrie-droite'}, {id:'svm-marge-exemple'}, {id:'svm-geometrie-pas', stages:[0]}, {id:'simple-marge'},
+      {id:'svm-hm-primal'}, {id:'svm-hm-primal-dual'}, {id:'svm-hm-lagrangien'}, {id:'svm-hm-kkt'}, {id:'svm-hm-dual'}, {id:'dualite-pas', stages:[0]}, {id:'simple-supports'}, {id:'marge-souple-exemple'},
+      {id:'why-relax'}, {id:'marge-souple-pas', stages:[0,1]}, {id:'svm-sm-primal'}, {id:'simple-C'}, {id:'svm-sm-lagrangien'}, {id:'svm-sm-derivees'}, {id:'svm-sm-dual'}, {id:'hard-soft-n2', stages:[3]},
+      {id:'multiclasses-n2', stages:[0,2,4]}, {id:'multiclasses-1'},
+      {id:'acp-pas', stages:[1,2,3]}, {id:'why-acp'}, {id:'acp-exemple'}
     ]
   };
   const lessons = {
@@ -65,13 +52,16 @@
     categorisation:[5,'Situer les modèles linéaires dans le programme.', 'Pourquoi commencer par un modèle simple ?'],
     geometrie:[10,'Lire un score et sa frontière.', 'Que devient la frontière si on multiplie le score par un nombre positif ?'],
     supervises:[8,'Relier paramètres appris et erreur minimisée.', 'Que signifie « linéaire » dans une régression polynomiale ?'],
-    logistique:[20,'Distinguer score, probabilité et classe.', 'Si on change le seuil, faut-il réapprendre le modèle ?'],
+    modeles:[10,'Reconnaître un modèle linéaire et son critère.', 'Que signifie « linéaire » dans une régression polynomiale ?'],
+    'svm-marge':[17,'Calculer une distance et une marge.', 'Pourquoi diviser le score par la norme du vecteur normal ?'],
+    logistique:[30,'Distinguer score, probabilité et classe.', 'Si on change le seuil, faut-il réapprendre le modèle ?'],
     'svm-geometrie':[6,'Passer du score à une distance.', 'Pourquoi diviser le score par la norme du vecteur normal ?'],
     'marge-dure':[12,'Relier marge maximale et problème primal.', 'Pourquoi fixer la plus petite marge fonctionnelle à 1 ?'],
-    'marge-souple':[10,'Interpréter les violations et le paramètre C.', 'Une violation de marge est-elle forcément une erreur de classification ?'],
+    'marge-souple':[16,'Interpréter les violations et le paramètre C.', 'Une violation de marge est-elle forcément une erreur de classification ?'],
     dualite:[10,'Expliquer pourquoi certains points définissent le SVM.', 'Que signifie un multiplicateur strictement positif en marge dure ?'],
     'hard-soft':[5,'Comparer probabilité, marge et régularisation.', 'Un score SVM est-il une probabilité ?'],
-    multiclasses:[9,'Combiner les modèles OvR et OvO.', 'Avec quatre classes, combien de modèles faut-il pour OvR et pour OvO ?']
+    acp:[10,'Expliquer l’ACP et la variance gardée.', 'Que maximise le premier axe de l’ACP ?'],
+    multiclasses:[7,'Combiner les modèles OvR et OvO.', 'Avec quatre classes, combien de modèles faut-il pour OvR et pour OvO ?']
   };
   const all = chapters.flatMap(chapter=>chapter.lessons.flatMap(lesson=>lesson.slides.map(slide=>({lesson,slide}))));
   const lookup = id=>{const entry=all.find(entry=>entry.slide.id===id);if(!entry)throw Error('Unknown classroom slide: '+id);return entry;};
@@ -106,6 +96,12 @@
   // assumption. Keep stable IDs, original slide numbers and source blocks intact.
   const logistic=chapters.find(chapter=>chapter.id==='lineaires')?.lessons.find(lesson=>lesson.id==='logistique');
   if(logistic){const story=logistic.slides.find(slide=>slide.id==='logistique-n2');
-  logistic.slides.splice(logistic.slides.indexOf(story),1);logistic.slides.unshift(story);}
+  /* ordre fixé par chapter2-plan.js (régression linéaire puis logistique de A à Z) */
+    // SVM : « Équation d’une droite » juste après « L’idée des SVM » (ordre « simply explained »).
+    const svmG=chapters[1].lessons.find(lesson=>lesson.id==='svm-geometrie'),droite=svmG?.slides.find(slide=>slide.id==='svm-geometrie-droite');
+    if(droite){svmG.slides.splice(svmG.slides.indexOf(droite),1);svmG.slides.splice(1,0,droite);}
+    const labels=svmG?.slides.find(slide=>slide.id==='svm-geometrie-n2'),dist=svmG?.slides.find(slide=>slide.id==='svm-geometrie-pas');
+    if(labels&&dist){svmG.slides.splice(svmG.slides.indexOf(labels),1);svmG.slides.splice(svmG.slides.indexOf(dist)+1,0,labels);}
+}
   window.SID34_CLASSROOM={entries};
 })();

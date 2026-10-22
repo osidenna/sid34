@@ -515,7 +515,208 @@
     }
   };
 
+  /* =======================================================================
+     Chapitre 2 · Linéaire en quoi ? Une question piège pour ouvrir le chapitre.
+     A : courbe, mais linéaire en θ. B : droite en x, mais θ y apparaît au carré.
+     ==================================================================== */
+  const linChart = miniChart({x: [-2, 2], y: [-2, 4], xt: [-2, -1, 0, 1, 2], yt: [-2, 0, 2, 4]});
+  const LN = linChart, TB = 1.2;
+  const linShared = {t1: 0.6, t2: 0.8};
+  const fA = (s, x) => 0.5 + s.t1 * x + s.t2 * x * x, fB = x => TB * TB * x + TB;
+  const linearitySpec = {
+    id: 'linearity-story', kicker: 'LINÉAIRE EN QUOI ?', noDrag: true,
+    axes: ['Entrée \\(x\\)', 'Prévision \\(f(x)\\)'],
+    plotSVG: uid => linChart.svg(uid, 'Deux modèles : une courbe A et une droite B'),
+    footnote: 'A : \\(f_\\theta(x)=\\theta_0+\\theta_1x+\\theta_2x^2\\). B : \\(f_\\theta(x)=\\theta^2x+\\theta\\), avec \\(\\theta=1{,}2\\).',
+    stages: [
+      {title: 'Lequel est linéaire ?', html: String.raw`<p><strong>A</strong> : \(f_\theta(x)=\theta_0+\theta_1x+\theta_2x^2\), une courbe.</p><p><strong>B</strong> : \(f_\theta(x)=\theta^2x+\theta\), une droite.</p>`,
+        prompt: 'Lequel de ces deux modèles est linéaire ?',
+        choices: [
+          {t: 'A, la courbe', why: String.raw`Bonne intuition pour la suite du cours, mais A n’est pas linéaire en \(x\) : \(x^2\) la courbe.`},
+          {t: 'B, la droite', why: String.raw`B est bien une droite en \(x\), mais \(\theta\) y apparaît au carré : B n’est pas linéaire en \(\theta\).`},
+          {t: 'Ça dépend : linéaire en quoi ?', ok: true}],
+        answer: String.raw`B est linéaire (affine) en \(x\) ; A est linéaire en \(\theta\). Dans ce cours, un modèle linéaire est linéaire <strong>en ses paramètres</strong> : c’est A.`},
+      {title: 'Linéaire en x', slideTitle: 'Linéaire en \\(x\\)', html: String.raw`<p>En \(x\), « linéaire » veut dire que la prévision est une <strong>droite</strong> : \(f(x)=a\,x+c\).</p><p>B l’est ; A ne l’est pas, à cause de \(x^2\).</p>`,
+        details: {title: 'Le test', html: String.raw`<p>Linéaire en \(x\) : \(f(\alpha x+\beta x')=\alpha f(x)+\beta f(x')\) (à la constante près, on dit affine).</p>`}},
+      {title: 'Linéaire en θ', slideTitle: 'Linéaire en \\(\\theta\\)', html: String.raw`<p>En \(\theta\) : à \(x\) fixé, la prévision est une somme « paramètre × nombre » : \(f_\theta(x)=\theta^\top\phi(x)\).</p><p>A s’écrit \(\theta_0\cdot1+\theta_1\cdot x+\theta_2\cdot x^2\) : linéaire en \(\theta\). Bougez \(\theta_1\) et \(\theta_2\).</p>`,
+        details: {title: 'Pourquoi c’est le bon sens ici', html: String.raw`<p>Linéaire en \(\theta\), la perte quadratique se minimise par moindres carrés, comme une régression linéaire : la régression polynomiale est un modèle linéaire. B, avec \(\theta^2\), ne s’écrit pas \(\theta^\top\phi(x)\).</p>`}}
+    ],
+    shared: linShared,
+    reset() { Object.assign(linShared, {t1: 0.6, t2: 0.8}); },
+    canonical() { return {t1: 0.6, t2: 0.8}; },
+    init() {},
+    controls(ctx) { return ctx.stage === 2 ? slider('t1', '\\(\\theta_1\\)', ctx.state.t1, -1.5, 1.5, 0.1, fr(ctx.state.t1, 1)) + slider('t2', '\\(\\theta_2\\)', ctx.state.t2, -1, 1, 0.1, fr(ctx.state.t2, 1)) : ''; },
+    wire(ctx) { wireRange(ctx, 't1', v => { ctx.state.t1 = v; }, v => fr(v, 1)); wireRange(ctx, 't2', v => { ctx.state.t2 = v; }, v => fr(v, 1)); },
+    draw(ctx) {
+      const st = ctx.stage, s = ctx.state, fadeA = st === 1, fadeB = st === 2;
+      let lines = AK.pathEl(LN.path(x => fA(s, x)), COL.cat, 2.8, fadeA ? 'opacity=".25"' : '') + AK.pathEl(LN.path(fB), COL.dog, 2.8, fadeB ? 'opacity=".25"' : '');
+      if (st === 2) lines += [[x => 0.5, '1'], [x => s.t1 * x, 'x'], [x => s.t2 * x * x, 'x²']].map(([f]) => AK.pathEl(LN.path(f), COL.soft, 1.2, 'stroke-dasharray="4 4"')).join('');
+      const tag = (x, f, txt, col, faded) => overlay(LN.X(x), LN.Y(f) - 16, txt, 'as-strong', LN.P.W, LN.P.H).replace('class="as-label', 'style="color:' + col + (faded ? ';opacity:.35' : '') + '" class="as-label');
+      setPlot(ctx, lines); setOverlay(ctx, tag(-1.6, fA(s, -1.6), 'A', COL.cat, fadeA) + tag(1.1, Math.min(fB(1.1), 3.6), 'B', COL.dog, fadeB));
+      ctx.svg.querySelector('desc').textContent = 'Courbe A (linéaire en thêta) et droite B (linéaire en x).';
+      const row = (name, x, th) => '<tr><td>' + name + '</td><td>' + x + '</td><td>' + th + '</td></tr>';
+      ctx.side.innerHTML = '<table class="as-table"><thead><tr><th></th><th>en \\(x\\)</th><th>en \\(\\theta\\)</th></tr></thead><tbody>' + (st === 0 ? row('A', '?', '?') + row('B', '?', '?') : row('<b style="color:' + COL.cat + '">A</b>', 'non', st === 2 ? '<strong>oui</strong>' : '?') + row('<b style="color:' + COL.dog + '">B</b>', '<strong>oui</strong>', st === 2 ? 'non' : '?')) + '</tbody></table>';
+      ctx.readout.innerHTML = ['<strong>Une courbe, une droite : lequel est linéaire ?</strong><span>Répondez avant de continuer.</span>', '<strong>B est une droite en \\(x\\)</strong><span>A ne l’est pas.</span>', '<strong>\\(f_\\theta(x)=0{,}5+' + tx(s.t1, 1) + 'x+' + tx(s.t2, 1) + 'x^2\\)</strong><span>Toujours une somme « paramètre × nombre » : linéaire en \\(\\theta\\).</span>'][st];
+    }
+  };
+
+  /* =======================================================================
+     Chapitre 2 · De la régression linéaire à la logistique, pas à pas (style TileStats) :
+     huit animaux, le poids seul, tous les nombres calculés à l'écran.
+     ==================================================================== */
+  const LL = [[3.0, 0], [4.2, 0], [5.0, 0], [7.5, 0], [6.0, 1], [8.0, 1], [9.0, 1], [11.0, 1]];
+  const llFit = (() => {
+    const n = LL.length, mx = LL.reduce((t, p) => t + p[0], 0) / n, my = LL.reduce((t, p) => t + p[1], 0) / n;
+    const a = LL.reduce((t, p) => t + (p[0] - mx) * (p[1] - my), 0) / LL.reduce((t, p) => t + (p[0] - mx) ** 2, 0);
+    let w = 0, b = 0;
+    for (let it = 0; it < 60; it++) {
+      let g0 = 0, g1 = 0, h00 = 0, h01 = 0, h11 = 0;
+      LL.forEach(([x, y]) => { const p = 1 / (1 + Math.exp(-(w * x + b))), r = p - y, v = p * (1 - p); g0 += r * x; g1 += r; h00 += v * x * x; h01 += v * x; h11 += v; });
+      const det = h00 * h11 - h01 * h01; w -= (h11 * g0 - h01 * g1) / det; b -= (h00 * g1 - h01 * g0) / det;
+    }
+    return {a, c: my - a * mx, w, b};
+  })();
+  const llChart = miniChart({x: [2, 13], y: [-0.4, 1.6], xt: [2, 4, 6, 8, 10, 12], yt: [0, 0.5, 1]});
+  const LG = llChart, sig = z => 1 / (1 + Math.exp(-z));
+  const llShared = {x: 7};
+  const linlogSpec = {
+    id: 'linlog-story', kicker: 'DE LA RÉGRESSION LINÉAIRE À LA LOGISTIQUE', noDrag: true,
+    axes: ['Poids \\(x\\) (kg)', 'Chien ? \\(y\\in\\{0,1\\}\\)'],
+    plotSVG: uid => llChart.svg(uid, 'Huit animaux : poids et étiquette 0 ou 1'),
+    footnote: 'Huit animaux : chats à 3 ; 4,2 ; 5 ; 7,5 kg, chiens à 6 ; 8 ; 9 ; 11 kg. Droite des moindres carrés, puis régression logistique sans pénalité, ajustées sur ces huit points.',
+    stages: [
+      {title: 'Une droite sur des 0 et des 1', html: String.raw`<p>Chat \(=0\), chien \(=1\). Traçons la droite des moindres carrés, comme en régression linéaire.</p><p>Que vaut-elle loin des données ?</p>`,
+        prompt: 'Pour un animal de 13 kg, que prédit la droite ?',
+        choices: [
+          {t: 'exactement 1', why: 'Une droite ne s’arrête pas à 1 : elle continue de monter avec le poids.'},
+          {t: String.raw`\(1{,}41\) : plus que 1`, ok: true},
+          {t: String.raw`\(0{,}5\)`, why: String.raw`\(0{,}5\) est atteint vers \(6{,}7\) kg ; à 13 kg, la droite est bien plus haut.`}],
+        answer: String.raw`\(1{,}41\) n’est pas une probabilité, et à 2 kg la droite donne \(-0{,}18\). Il faut une courbe qui reste entre 0 et 1.`},
+      {title: 'Une courbe en S', html: String.raw`<p>La régression logistique garde le score linéaire \(z=wx+b\), puis le passe dans la sigmoïde : \(\hat p=\sigma(z)=\dfrac1{1+e^{-z}}\).</p><p>La courbe reste entre 0 et 1.</p>`,
+        details: {title: 'Les coefficients appris', html: String.raw`<p>Ici \(w\approx1{,}03\) et \(b\approx-6{,}85\) : \(\hat p=0{,}5\) quand \(z=0\), soit \(x=-b/w\approx6{,}65\) kg.</p>`}},
+      {title: 'Odds et log-odds', html: String.raw`<p>Les <strong>odds</strong> comparent les chances : \(\dfrac{\hat p}{1-\hat p}\). Des odds de 2 : deux fois plus de chances d’être un chien qu’un chat.</p><p>Son logarithme, les <strong>log-odds</strong>, valent exactement le score linéaire \(wx+b\). Choisissez un poids.</p>`,
+        details: {title: 'Pourquoi log-odds = score', html: String.raw`<p>Si \(\hat p=\sigma(z)\), alors \(1-\hat p=\sigma(-z)\) et \(\dfrac{\hat p}{1-\hat p}=e^{z}\), donc \(\log\dfrac{\hat p}{1-\hat p}=z=wx+b\).</p>`}},
+      {title: 'Lire le coefficient', html: String.raw`<p>Un kilo de plus ajoute \(w\) au score, donc <strong>multiplie les odds par \(e^{w}\)</strong>.</p><p>Ici \(e^{1{,}03}\approx2{,}8\) : chaque kilo multiplie par 2,8 les odds d’être un chien.</p>`}
+    ],
+    shared: llShared,
+    reset() { llShared.x = 7; },
+    canonical() { return {x: 7}; },
+    init() {},
+    controls(ctx) { return ctx.stage >= 2 ? slider('x', 'Poids \\(x\\)', ctx.state.x, 3, 11, 0.5, fr(ctx.state.x, 1) + ' kg') : ''; },
+    wire(ctx) { wireRange(ctx, 'x', v => { ctx.state.x = v; }, v => fr(v, 1) + ' kg'); },
+    draw(ctx) {
+      const st = ctx.stage, x = ctx.state.x, f = llFit, pr = v => sig(f.w * v + f.b);
+      let lines = AK.pathEl('M' + LG.P.L + ' ' + LG.Y(0) + 'H' + LG.P.R + 'M' + LG.P.L + ' ' + LG.Y(1) + 'H' + LG.P.R, COL.guide, 1, 'stroke-dasharray="3 5"');
+      lines += AK.pathEl(LG.path(v => f.a * v + f.c), COL.ink, 2.4, st ? 'opacity=".25"' : '');
+      if (st >= 1) lines += AK.pathEl(LG.path(pr), COL.cat, 2.8);
+      let over = '';
+      if (st === 0) over += overlay(LG.X(12.2), LG.Y(f.a * 12.2 + f.c) - 14, '\\(1{,}41\\) à 13 kg', 'as-small', LG.P.W, LG.P.H) + overlay(LG.X(2.6), LG.Y(f.a * 2.6 + f.c) + 16, '\\(-0{,}18\\) à 2 kg', 'as-small', LG.P.W, LG.P.H);
+      if (st >= 2) { lines += dot(LG.X(x), LG.Y(pr(x)), COL.error); if (st === 3) lines += dot(LG.X(x + 1), LG.Y(pr(x + 1)), COL.error, 6, '#fbefe9'); }
+      setPlot(ctx, lines); setOverlay(ctx, over);
+      ctx.svg.querySelector('.as-dots').innerHTML = LL.map(([v, y]) => '<circle cx="' + LG.X(v).toFixed(1) + '" cy="' + LG.Y(y).toFixed(1) + '" r="6" fill="#fff" stroke="' + (y ? COL.dog : COL.cat) + '" stroke-width="2.6"/>').join('');
+      ctx.svg.querySelector('desc').textContent = 'Huit animaux, droite des moindres carrés et courbe logistique.';
+      const row = v => { const p = pr(v); return '<tr><td>' + fr(v, 1) + ' kg</td><td>' + fr(f.w * v + f.b, 2) + '</td><td>' + fr(p, 2) + '</td><td>' + fr(p / (1 - p), 2) + '</td></tr>'; };
+      const head = '<table class="as-table"><thead><tr><th>poids</th><th>score \\(z\\)</th><th>\\(\\hat p\\)</th><th>odds</th></tr></thead><tbody>';
+      if (st === 0) { ctx.side.innerHTML = '<table class="as-table"><tbody><tr><td>pente</td><td>' + fr(f.a, 3) + '</td></tr><tr><td>à 2 kg</td><td>' + fr(f.a * 2 + f.c, 2) + '</td></tr><tr><td>à 13 kg</td><td>' + fr(f.a * 13 + f.c, 2) + '</td></tr></tbody></table>'; ctx.readout.innerHTML = '<strong>\\(\\hat y=' + tx(f.a, 3) + '\\,x' + term(f.c, '') + '\\)</strong><span>Une droite sort de \\([0,1]\\).</span>'; }
+      if (st === 1) { ctx.side.innerHTML = '<table class="as-table"><tbody><tr><td>\\(w\\)</td><td>' + fr(f.w, 2) + '</td></tr><tr><td>\\(b\\)</td><td>' + fr(f.b, 2) + '</td></tr><tr><td>\\(\\hat p=0{,}5\\)</td><td>' + fr(-f.b / f.w, 2) + ' kg</td></tr></tbody></table>'; ctx.readout.innerHTML = '<strong>\\(\\hat p=\\sigma(' + tx(f.w) + 'x' + term(f.b, '') + ')\\)</strong><span>Toujours entre 0 et 1.</span>'; }
+      if (st === 2) { const p = pr(x); ctx.side.innerHTML = head + row(x) + '</tbody></table>'; ctx.readout.innerHTML = '<strong>\\(\\log\\dfrac{' + tx(p) + '}{' + tx(1 - p) + '}=' + tx(Math.log(p / (1 - p))) + '=' + tx(f.w) + '\\times' + tx(x, 1) + term(f.b, '') + '\\)</strong><span>Les log-odds sont le score linéaire.</span>'; }
+      if (st === 3) { const o1 = pr(x) / (1 - pr(x)), o2 = pr(x + 1) / (1 - pr(x + 1)); ctx.side.innerHTML = head + row(x) + row(x + 1) + '</tbody></table>'; ctx.readout.innerHTML = '<strong>Odds : ' + fr(o1, 2) + ' → ' + fr(o2, 2) + ', rapport ' + fr(o2 / o1, 2) + '</strong><span>\\(e^{w}=e^{' + tx(f.w) + '}\\approx' + tx(Math.exp(f.w)) + '\\), quel que soit le poids de départ.</span>'; }
+    }
+  };
+
+  /* =======================================================================
+     Chapitre 2 · ACP : la direction qui garde le plus d'information, sans étiquette.
+     ==================================================================== */
+  const PCA = (() => {
+    const n = train.length, m1 = train.reduce((t, a) => t + a.x1, 0) / n, m2 = train.reduce((t, a) => t + a.x2, 0) / n;
+    let a = 0, b = 0, c = 0; train.forEach(p => { const u = p.x1 - m1, v = p.x2 - m2; a += u * u; b += u * v; c += v * v; }); a /= n; b /= n; c /= n;
+    const d = Math.sqrt(((a - c) / 2) ** 2 + b * b), l1 = (a + c) / 2 + d, l2 = (a + c) / 2 - d, ang = 0.5 * Math.atan2(2 * b, a - c) * 180 / Math.PI;
+    return {m: {x1: m1, x2: m2}, a, b, c, l1, l2, ang, total: a + c, varAt: deg => { const t = deg * Math.PI / 180, u = Math.cos(t), v = Math.sin(t); return a * u * u + 2 * b * u * v + c * v * v; }};
+  })();
+  const pcaShared = {theta: 40, reveal: false};
+  const pcaSpec = {
+    id: 'pca-story', kicker: 'ACP · RÉSUMER SANS ÉTIQUETTE', noDrag: true,
+    footnote: 'ACP sur les 24 animaux d’apprentissage, variables brutes (kg, cm). En pratique on standardise souvent les variables avant l’ACP, pour qu’aucune unité ne domine.',
+    stages: [
+      {title: 'Des points sans étiquette', html: String.raw`<p>On n’a que les mesures, sans savoir qui est chat ou chien.</p><p>Question : peut-on résumer chaque animal par <strong>un seul nombre</strong> sans perdre l’essentiel ?</p>`},
+      {title: 'Choisir une direction', html: String.raw`<p>On projette chaque animal sur une droite qui passe par le centre du nuage.</p><p>Tournez la droite : plus les projections sont <strong>étalées</strong>, plus on garde d’information.</p>`,
+        prompt: 'Quelle direction garde le plus d’information ?',
+        choices: [
+          {t: 'celle où les projections sont le plus serrées', why: 'Des projections serrées se confondent : on ne distingue plus les animaux.'},
+          {t: 'celle où les projections sont le plus étalées', ok: true},
+          {t: 'n’importe laquelle, cela revient au même', why: 'Tournez la droite : l’étalement (la variance) change beaucoup selon la direction.'}],
+        answer: String.raw`On garde la direction de <strong>variance maximale</strong> : c’est le premier axe principal.`},
+      {title: 'Le premier axe', html: String.raw`<p>La meilleure direction est le <strong>premier axe principal</strong>. Le second lui est perpendiculaire.</p><p>Ici, le premier axe garde environ <strong>83 %</strong> de la variance totale.</p>`,
+        details: {title: 'Comment on le calcule', html: String.raw`<p>On centre les données, on calcule leur matrice de covariance \(\Sigma\), et on prend son vecteur propre de plus grande valeur propre \(\lambda_1\). La part de variance gardée vaut \(\lambda_1/(\lambda_1+\lambda_2)\).</p>`}},
+      {title: 'Un seul nombre par animal', html: String.raw`<p>Chaque animal devient sa coordonnée sur le premier axe.</p><p>Révélez les espèces : chats et chiens se séparent déjà, <strong>sans qu’on ait utilisé les étiquettes</strong>.</p>`}
+    ],
+    shared: pcaShared,
+    reset() { Object.assign(pcaShared, {theta: 40, reveal: false}); },
+    canonical(stage) { return {theta: stage >= 2 ? Math.round(PCA.ang) : 40, reveal: stage === 3}; },
+    init() {},
+    controls(ctx) {
+      if (ctx.stage === 1) return slider('theta', 'Direction', ctx.state.theta, -90, 90, 1, ctx.state.theta + '°');
+      if (ctx.stage === 3) return '<button type="button" class="as-button" data-reveal aria-pressed="' + ctx.state.reveal + '">' + (ctx.state.reveal ? 'Masquer les espèces' : 'Révéler les espèces') + '</button>';
+      return '';
+    },
+    wire(ctx) {
+      wireRange(ctx, 'theta', v => { ctx.state.theta = v; }, v => v + '°');
+      ctx.controls.querySelector('[data-reveal]')?.addEventListener('click', () => { ctx.state.reveal = !ctx.state.reveal; ctx.commit({controls: true}); }, {signal: ctx.signal});
+    },
+    draw(ctx) {
+      const st = ctx.stage, s = ctx.state, deg = st >= 2 ? PCA.ang : s.theta, t = deg * Math.PI / 180, u = {x1: Math.cos(t), x2: Math.sin(t)}, M = PCA.m;
+      const far = k => ({x1: M.x1 + k * u.x1, x2: M.x2 + k * u.x2});
+      let lines = '', over = '';
+      if (st >= 1) {
+        lines += seg(far(-9), far(9), COL.cat, 2.6);
+        if (st >= 2) { const v = {x1: -u.x2, x2: u.x1}; lines += seg({x1: M.x1 - 6 * v.x1, x2: M.x2 - 6 * v.x2}, {x1: M.x1 + 6 * v.x1, x2: M.x2 + 6 * v.x2}, COL.guide, 1.4, '5 5'); }
+        train.forEach(a => { const k = (a.x1 - M.x1) * u.x1 + (a.x2 - M.x2) * u.x2, f = far(k); lines += seg(a, f, '#c9ccd3', 1.2) + '<circle cx="' + X(f.x1).toFixed(1) + '" cy="' + Y(f.x2).toFixed(1) + '" r="3.2" fill="' + (st === 3 && s.reveal ? (a.y ? COL.dog : COL.cat) : COL.ink) + '"/>'; });
+      }
+      setLines(ctx, lines);
+      placeDots(ctx, train.map(a => ({id: a.id, x: X(a.x1), y: Y(a.x2), hideLabel: !(st === 3 && s.reveal), opacity: st >= 1 ? .55 : 1, aria: 'Animal, ' + measures(a)})));
+      setOverlay(ctx, over);
+      ctx.svg.querySelector('desc').textContent = 'Nuage des animaux et direction de projection.';
+      const v = PCA.varAt(deg), pct = v / PCA.total;
+      if (st === 0) { ctx.side.innerHTML = '<p class="as-side-caption">24 animaux, 2 mesures chacun, aucune étiquette.</p>'; ctx.readout.innerHTML = '<strong>Deux nombres par animal</strong><span>Peut-on n’en garder qu’un ?</span>'; }
+      if (st >= 1 && st <= 2) {
+        ctx.side.innerHTML = '<div class="as-bars"><div class="as-bar-row"><span class="as-bar-label">variance gardée</span><span class="as-bar-track"><i style="width:' + (pct * 100).toFixed(1) + '%;background:' + COL.cat + '"></i></span><span class="as-bar-value">' + Math.round(pct * 100) + ' %</span></div></div>' + goal(st === 1 && pct > .82, st === 1 ? (pct > .82 ? 'Bravo : direction de variance maximale.' : 'Défi : garder plus de 82 % de la variance.') : 'Axe 1 : ' + Math.round(pct * 100) + ' % de la variance.');
+        ctx.readout.innerHTML = '<strong>Variance des projections : ' + fr(v, 2) + '</strong><span>Sur un total de ' + fr(PCA.total, 2) + '.</span>';
+      }
+      if (st === 3) { ctx.side.innerHTML = '<p class="as-side-caption">' + (s.reveal ? 'Chats d’un côté, chiens de l’autre : l’axe 1 suit surtout le poids.' : 'Chaque point sur l’axe est un animal résumé par un seul nombre.') + '</p>'; ctx.readout.innerHTML = '<strong>Un nombre par animal : sa coordonnée sur l’axe 1</strong><span>' + Math.round(PCA.l1 / PCA.total * 100) + ' % de l’information gardée.</span>'; }
+    }
+  };
+
+  /* Explorateur de log-loss : étiquette réelle et probabilité prédite → pénalité. */
+  const bceChart = miniChart({x: [0, 1], y: [0, 5], xt: [0, 0.25, 0.5, 0.75, 1], yt: [0, 1, 2, 3, 4, 5]});
+  const BC = bceChart, bceShared = {y: 1, p: 0.8};
+  const bceSpec = {
+    id: 'bce-story', kicker: 'LOG LOSS · EXPLORER', noDrag: true,
+    axes: ['Probabilité prédite \\(p\\)', 'Pénalité'],
+    plotSVG: uid => bceChart.svg(uid, 'Log loss en fonction de la probabilité prédite'),
+    stages: [{title: 'Explorer la log loss', html: String.raw`<p>Choisissez la vraie étiquette et la probabilité prédite.</p><p>Si \(y=1\), la perte vaut \(-\ln p\) ; si \(y=0\), elle vaut \(-\ln(1-p)\). Une erreur <strong>confiante</strong> coûte très cher.</p>`}],
+    shared: bceShared,
+    reset() { Object.assign(bceShared, {y: 1, p: 0.8}); },
+    canonical() { return {y: 1, p: 0.8}; },
+    init() {},
+    controls(ctx) { return '<span class="as-hint">Vraie étiquette</span>' + AK.chips('y', [0, 1], ctx.state.y, v => v ? '1 (réussi)' : '0 (échoué)') + slider('p', 'Probabilité prédite \\(p\\)', ctx.state.p, 0.01, 0.99, 0.01, fr(ctx.state.p, 2)); },
+    wire(ctx) { AK.wireChips(ctx, 'y', v => { ctx.state.y = +v; }); wireRange(ctx, 'p', v => { ctx.state.p = v; }, v => fr(v, 2)); },
+    draw(ctx) {
+      const {y, p} = ctx.state, loss = y ? -Math.log(p) : -Math.log(1 - p);
+      const lines = AK.pathEl(BC.path(q => -Math.log(q), .007, .999), COL.dog, y ? 2.8 : 1.2, y ? '' : 'opacity=".3"') + AK.pathEl(BC.path(q => -Math.log(1 - q), .001, .993), COL.cat, y ? 1.2 : 2.8, y ? 'opacity=".3"' : '') + dot(BC.X(p), BC.Y(Math.min(loss, 5)), COL.error);
+      setPlot(ctx, lines);
+      setOverlay(ctx, ctx.isStatic ? '' : overlay(BC.X(.24), BC.Y(3.6), '\\(-\\ln p\\)', 'as-strong', BC.P.W, BC.P.H).replace('class="as-label', 'style="color:' + COL.dog + '" class="as-label') + overlay(BC.X(.74), BC.Y(3.6), '\\(-\\ln(1-p)\\)', 'as-strong', BC.P.W, BC.P.H).replace('class="as-label', 'style="color:' + COL.cat + '" class="as-label'));
+      ctx.svg.querySelector('desc').textContent = 'Courbes de log loss pour y = 1 et y = 0.';
+      const verdict = loss < .3 ? 'Bonne prédiction : faible pénalité.' : loss < 1 ? 'Prédiction hésitante : pénalité moyenne.' : 'Erreur confiante : forte pénalité.';
+      ctx.side.innerHTML = '<div class="as-loss-big"><small>LOG LOSS</small><strong>' + fr(loss, 3) + '</strong></div><p class="as-side-caption">' + verdict + '</p>';
+      ctx.readout.innerHTML = '<strong>\\(y=' + y + '\\), \\(p=' + tx(p) + '\\) : perte \\(=' + (y ? '-\\ln ' + tx(p) : '-\\ln(1-' + tx(p) + ')') + '=' + tx(loss, 3) + '\\)</strong><span>' + verdict + '</span>';
+    }
+  };
+
   window.SuperviseStory = K.defineStory(superviseSpec);
+  window.BCEStory = K.defineStory(bceSpec);
+  window.PCAStory = K.defineStory(pcaSpec);
+  window.LinLogStory = K.defineStory(linlogSpec);
+  window.LinearityStory = K.defineStory(linearitySpec);
   window.LossStory = K.defineStory(lossSpec);
   window.RiskStory = K.defineStory(riskSpec);
   window.GeometryStory = K.defineStory(geometrieSpec);

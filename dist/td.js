@@ -386,6 +386,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
       if (part.math) return '<div class="td-math">' + tex(part.math, true) + '</div>';
       if (part.ol) return '<ol>' + part.ol.map(t => '<li>' + inline(t) + '</li>').join('') + '</ol>';
       if (part.ul) return '<ul>' + part.ul.map(t => '<li>' + inline(t) + '</li>').join('') + '</ul>';
+      if (part.table) return '<table class="course-table td-table"><thead><tr>' + part.table.head.map(h => '<th>' + inline(h) + '</th>').join('') + '</tr></thead><tbody>' + part.table.rows.map(r => '<tr>' + r.map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
       if (part.note) return '<p class="td-note">' + inline(part.note) + '</p>';
       if (part.credit) return '<p class="td-credit">' + part.credit + '</p>';
       if (part.box) return '<aside class="td-box"><h3>' + inline(part.box.title) + '</h3>' + partsHTML(part.box.parts) + '</aside>';
@@ -503,7 +504,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
   // ---------- notebook download ----------
   function markdown(parts) {
-    return parts.map(part => part.ai ? '> **' + AI_RULES[part.ai][0] + '.**' + (part.text ? ' ' + part.text : '') : part.prompt ? '> Consigne pour l’assistant IA :\n>\n> ' + part.prompt : part.widget ? '' : part.p ? part.p : part.h ? '### ' + part.h : part.math ? '$$' + part.math + '$$' : part.ol ? part.ol.map((t, i) => (i + 1) + '. ' + t).join('\n') : part.ul ? part.ul.map(t => '- ' + t).join('\n') : part.note ? '> ' + part.note : part.credit ? part.credit.replace(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g, '[$2]($1)') : part.box ? '> **' + part.box.title + '**\n>\n' + markdown(part.box.parts).split('\n').map(l => '> ' + l).join('\n') : '').filter(Boolean).join('\n\n');
+    return parts.map(part => part.ai ? '> **' + AI_RULES[part.ai][0] + '.**' + (part.text ? ' ' + part.text : '') : part.prompt ? '> Consigne pour l’assistant IA :\n>\n> ' + part.prompt : part.widget ? '' : part.table ? '| ' + part.table.head.join(' | ') + ' |\n|' + part.table.head.map(() => '---').join('|') + '|\n' + part.table.rows.map(r => '| ' + r.join(' | ') + ' |').join('\n') : part.p ? part.p : part.h ? '### ' + part.h : part.math ? '$$' + part.math + '$$' : part.ol ? part.ol.map((t, i) => (i + 1) + '. ' + t).join('\n') : part.ul ? part.ul.map(t => '- ' + t).join('\n') : part.note ? '> ' + part.note : part.credit ? part.credit.replace(/<a href="([^"]+)"[^>]*>([^<]+)<\/a>/g, '[$2]($1)') : part.box ? '> **' + part.box.title + '**\n>\n' + markdown(part.box.parts).split('\n').map(l => '> ' + l).join('\n') : '').filter(Boolean).join('\n\n');
   }
   function notebook(sheet) {
     const cells = [{cell_type: 'markdown', metadata: {}, source: ['# ' + sheet.title + '\n\nOumoukelthoum Sidenna · Apprentissage statistique · 2026–2027']}];

@@ -321,6 +321,7 @@ print("vecteurs de support :", modele.support_)`,
       }
     ]
   };
+  pitfalls['lineaires/svm-marge'] = pitfalls['lineaires/marge-dure'];
 
   // ---------- helpers ----------
   const escape = s => String(s).replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
