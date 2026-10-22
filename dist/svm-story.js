@@ -10,7 +10,6 @@
     {
       title: 'Séparer ne suffit pas',
       html: String.raw`<p>Plusieurs droites classent correctement ces points. Le SVM maximise la <mark>plus petite distance signée</mark> aux observations.</p><details class="as-theory"><summary>Détails</summary><div><p>La droite grise passe près d’un point ; la noire laisse davantage d’espace.</p><p>En défilant, une droite candidate parcourt plusieurs positions ; le segment brique mesure sa distance au point le plus proche.</p></div></details>`,
-      tex: String.raw`\gamma=\min_i\frac{y_i(w\cdot x_i+b)}{\|w\|}`,
       prompt: 'Quelle droite laisse le plus de place au point le plus proche ?'
     },
     {
@@ -63,7 +62,7 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function math(host, tex) { window.katex?.render(tex, host, {displayMode: true, throwOnError: false, strict: false}); }
+  function math(host, tex) { if (!tex) { host.remove(); return; } window.katex?.render(tex, host, {displayMode: true, throwOnError: false, strict: false}); }
   function inlineMath(scope) {
     if (!window.katex) return;
     scope.querySelectorAll('[data-tex]').forEach(el => { try { window.katex.render(el.dataset.tex, el, {throwOnError: false, strict: false}); } catch (_) {} });
