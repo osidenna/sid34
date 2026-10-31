@@ -5,7 +5,7 @@
   // Chapitres publiés et chapitres annoncés « à venir » (copie étudiants : chapitre 2 sans contenu).
   const ready = chapters.filter(chapter => !chapter.comingSoon), soon = chapters.filter(chapter => chapter.comingSoon);
   // Date de la séance de chaque chapitre annoncé (sinon « À venir »).
-  const SESSION_DATES = {'02': '22 octobre', '03': '29 octobre', '04': '12 novembre', '05': '10 décembre'};
+  const SESSION_DATES = {'02': '22 octobre', '03': '5 novembre', '04': '12 novembre', '05': '10 décembre'};
   const soonBadge = chapter => '<span class="soon-badge">' + (SESSION_DATES[chapter.number] || 'À venir') + '</span>';
   // Chapitres suivants du programme, annoncés dans le menu et le plan.
   const announced = [...soon, {number: '03', title: 'Algorithmes non linéaires'}, {number: '04', title: 'Agrégation'}, {number: '05', title: 'Cycle ML & Métriques d’évaluation'}];

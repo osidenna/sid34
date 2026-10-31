@@ -997,3 +997,9 @@ details.nb-setup-wrap .nb-cell { margin-top: 8px; }
 .presentation-content.is-sparse .formula-block .math { text-align: center; }
 
 .math-nowrap { white-space: nowrap; }
+
+/* Corrigé local des TD (bouton visible seulement quand les solutions sont présentes) */
+.td-corr-toggle[aria-pressed="true"] { background: #e3efe8; border-color: #2e6b4f; }
+.td-corr-code { margin: 6px 0 16px; padding: 10px 12px; border: 2px dashed #2e6b4f; border-radius: 10px; background: #e3efe8; }
+.td-corr-code p { margin: 0 0 6px; font-weight: 700; color: #2e6b4f; font-size: 14px; }
+.td-corr-code pre { margin: 0; padding: 10px; background: #fff; border-radius: 6px; font: 12.5px/1.5 ui-monospace, Menlo, monospace; white-space: pre-wrap; }

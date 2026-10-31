@@ -647,14 +647,28 @@ tests(heures, residus)`, expected: 'Shapiro-Wilk (normalité) : p = 0.609\nBreus
     const cells = sheet.exercises.flatMap(ex => ex.parts.flatMap(p => p.cell ? [p.cell] : p.box ? [] : []));
     const quizLessons = chapter.lessons.filter(l => teaching?.pitfalls[chapter.id + '/' + l.id]);
     const labs = Object.values(teaching?.td[chapter.id] || []);
+    // Corrigé local : les solutions n'existent que dans la copie de l'enseignante (retirées à la publication).
+    const hasCorr = sheet.exercises.some(ex => ex.solution?.length || ex.parts.some(p => p.cell && p.cell.solution));
     el.innerHTML =
-      '<p class="lesson-meta td-meta"><span>' + sheet.duration + '</span><button type="button" class="tool-button" data-notebook>' + window.CourseIcons.icon('download') + 'Notebook .ipynb</button><a class="tool-button" href="originaux/td1-2-2025-2026.pdf" download>' + window.CourseIcons.icon('download') + 'Ancien sujet 2025–2026 (PDF)</a></p>' +
+      '<p class="lesson-meta td-meta"><span>' + sheet.duration + '</span>' + (hasCorr ? '<button type="button" class="tool-button td-corr-toggle" aria-pressed="false">📘 Corrigé (enseignante, local)</button>' : '') + '<button type="button" class="tool-button" data-notebook>' + window.CourseIcons.icon('download') + 'Notebook .ipynb</button><a class="tool-button" href="originaux/td1-2-2025-2026.pdf" download>' + window.CourseIcons.icon('download') + 'Ancien sujet 2025–2026 (PDF)</a></p>' +
       '<nav class="td-index" aria-label="Exercices">' + sheet.exercises.map(ex => '<a href="#exercice-' + ex.n + '" data-jump data-status="' + (marks[chapter.id + '#' + ex.n] || 'todo') + '"><span class="td-number">' + (ex.label || 'Exercice ' + ex.n) + '</span><span class="td-index-title">' + inline(ex.title) + '</span><span class="td-index-status">' + statusLabel[marks[chapter.id + '#' + ex.n] || 'todo'] + '</span></a>').join('') + '</nav>' +
       '<details class="td-setup"><summary>Comment exécuter le code ?</summary><div class="td-setup-grid"><div><h3>Dans la page</h3><p>« Exécuter » lance la cellule et celles qui la précèdent dans l’exercice. La première exécution charge Python puis les bibliothèques nécessaires ; elle demande une connexion Internet. Maj + Entrée exécute aussi la cellule. Tab indente ; Maj + Tab, ou Échap puis Tab, permet de quitter le code. Modifier une cellule impose de réexécuter les suivantes.</p></div><div><h3>Sur votre machine</h3><p>Téléchargez le notebook du TD, puis :</p><pre class="td-shell">pip install jupyter scikit-learn matplotlib pandas\njupyter notebook ' + escape(sheet.notebook) + '</pre></div></div></details>' +
       sheet.exercises.map(ex => exerciseHTML(ex, chapter, marks)).join('') +
       (quizLessons.length ? '<section class="td-quiz"><h2>Pièges à éviter</h2><p class="pitfalls-intro">Les pièges des parties du chapitre. « Aller à l’expérience » ouvre la partie au bon endroit.</p></section>' : '') +
       (labs.length ? '<section class="td-python"><h2>Pour aller plus loin : retrouver les expériences du cours</h2><p class="pitfalls-intro">Ces codes scikit-learn utilisent les données du cours. Les coefficients arrondis des calculs à la main peuvent donner de petits écarts.</p></section>' : '');
     mountCells(el, cells);
+    const corrButton = el.querySelector('.td-corr-toggle');
+    if (corrButton) corrButton.addEventListener('click', () => {
+      const on = corrButton.getAttribute('aria-pressed') !== 'true';
+      corrButton.setAttribute('aria-pressed', on ? 'true' : 'false');
+      corrButton.textContent = on ? '📘 Masquer le corrigé' : '📘 Corrigé (enseignante, local)';
+      el.querySelectorAll('details.td-solution').forEach(d => { d.open = on; });
+      el.querySelectorAll('.td-corr-code').forEach(n => n.remove());
+      if (on) cells.filter(c => c.solution).forEach(c => {
+        const cellEl = el.querySelector('[data-cell="' + c.id + '"]');
+        if (cellEl) cellEl.insertAdjacentHTML('afterend', '<div class="td-corr-code"><p>📘 Solution de la cellule</p><pre>' + escape(c.solution) + '</pre></div>');
+      });
+    });
     el.querySelectorAll('.td-copy').forEach(button => button.addEventListener('click', () => {
       const text = button.closest('.td-prompt').querySelector('p').textContent;
       navigator.clipboard?.writeText(text).then(() => { button.textContent = 'Copié'; setTimeout(() => { button.textContent = 'Copier'; }, 1500); }, () => {});
