@@ -3,7 +3,7 @@
   // A 90-minute route through the existing slides. Reading mode keeps every source
   // slide and its number; focused panels share that number rather than renumbering it.
   const chapters = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2].filter(chapter => chapter && !chapter.comingSoon);
-  const stories = {'svm-story':'SVMStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
+  const stories = {'svm-story':'SVMStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','acp-images-story':'ACPImagesStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
   const route = {
     fondements: [
       {id:'introduction-generale-8'}, {id:'introduction-generale-9'},
@@ -39,7 +39,7 @@
       {id:'svm-hm-primal'}, {id:'svm-hm-primal-dual'}, {id:'svm-hm-lagrangien'}, {id:'svm-hm-kkt'}, {id:'svm-hm-dual'}, {id:'dualite-pas', stages:[0]}, {id:'simple-supports'}, {id:'marge-souple-exemple'},
       {id:'why-relax'}, {id:'marge-souple-pas', stages:[0,1]}, {id:'svm-sm-primal'}, {id:'simple-C'}, {id:'svm-sm-lagrangien'}, {id:'svm-sm-derivees'}, {id:'svm-sm-dual'}, {id:'hard-soft-n2', stages:[3]},
       {id:'multiclasses-n2', stages:[0,2,4]}, {id:'multiclasses-1'},
-      {id:'acp-pas', stages:[1,2,3]}, {id:'why-acp'}, {id:'acp-exemple'}
+      {id:'acp-pas', stages:[1,2,3,4]}, {id:'acp-images'}, {id:'why-acp'}, {id:'acp-exemple'}
     ]
   };
   const lessons = {
@@ -66,6 +66,8 @@
   const all = chapters.flatMap(chapter=>chapter.lessons.flatMap(lesson=>lesson.slides.map(slide=>({lesson,slide}))));
   const lookup = id=>{const entry=all.find(entry=>entry.slide.id===id);if(!entry)throw Error('Unknown classroom slide: '+id);return entry;};
   function entries(chapter) {
+    // Chapitre lu en défilant, sans parcours court : toutes ses diapositives, dans l’ordre.
+    if(!route[chapter.id])return chapter.lessons.flatMap(lesson=>lesson.slides.map(slide=>({lesson,slide:{...slide,extra:false,sourceId:slide.id}})));
     return route[chapter.id].flatMap(spec=>{
       const {lesson,slide}=lookup(spec.id);
       const base={...slide,extra:false,sourceId:slide.id};

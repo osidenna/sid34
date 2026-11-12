@@ -16,6 +16,10 @@
   // Troisième espèce pour la partie multiclasse : 13 lapins d'apprentissage (petits, poil court).
   const rabbits = [[2.6,1.4],[3.1,2.2],[3.6,1.1],[2.9,.9],[4.1,1.8],[3.3,2.7],[2.4,2],[3.9,1.3],[4.4,2.5],[2.8,1.7],[3.5,1.9],[4,.9],[4.6,3.4]]
     .map(([x1, x2], i) => ({id: 40 + i, y: 2, x1, x2, role: 'train', kind: 'lapin'}));
+  // Chapitre 3 : ceux qui cassent la droite. Petits chiens à poil court, petits chiens à poil long,
+  // grands chiens à poil long, et quelques animaux atypiques (y = 1 chien, y = 0 chat).
+  const visitors = [[1,2.4,1.4],[1,3,.9],[1,3.6,1.8],[1,2.9,2.2],[1,4.2,1.2],[1,5,1.6],[1,2.6,7.4],[1,3.4,7.6],[1,4.2,7.3],[1,5,7.6],[1,6.4,7.4],[1,8.6,6.6],[1,10.2,6.9],[1,4.4,4.9],[1,5.6,3.9],[0,9.4,3.2],[0,3.2,2.6],[0,9.6,6.2]]
+    .map(([y, x1, x2], i) => ({id: 53 + i, y, x1, x2, role: 'train', kind: y ? 'chien' : 'chat'}));
   const C_GRID = [0.01, 0.1, 1, 10];
   const DOMAIN = {x1: [2, 13], x2: [0, 8]};
 
@@ -208,7 +212,7 @@
   }
   if (typeof document !== 'undefined') startMascotLife();
 
-  const api = {animals, rabbits, byRole, C_GRID, DOMAIN, sigmoid, logit, score, prob, bce, meanBCE, accuracy, fitLogistic, reference, fitted,
+  const api = {animals, rabbits, visitors, byRole, C_GRID, DOMAIN, sigmoid, logit, score, prob, bce, meanBCE, accuracy, fitLogistic, reference, fitted,
     fitSVM, hinge, svmAccuracy, fr, tx, head, mascot, note, PALETTE, INK, round2};
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Animals = api;
 })(typeof window === 'undefined' ? globalThis : window);

@@ -171,14 +171,15 @@
     {...byId.multiclasses, duration: 7, slides: [byId.multiclasses.slides.find(x => x.id === 'multiclasses-n2'), ...byId.multiclasses.slides.filter(x => x.id !== 'multiclasses-n2')]},
     (() => {
       const story = worked('acp-pas', 'L’ACP pas à pas', [{type: 'pca-story'}]);
-      const why = simple('why-acp', 'Pourquoi l’ACP ?', String.raw`<p>Quand on a beaucoup de mesures, on veut les <strong>voir</strong>, les <strong>compresser</strong> ou enlever le bruit.</p><p>L’ACP fabrique quelques nouvelles variables, des combinaisons linéaires des anciennes, qui gardent le plus de variance possible. Pas besoin d’étiquette : c’est un algorithme <strong>non supervisé</strong>.</p><p>Sa perte : l’<strong>erreur de reconstruction</strong> \(\|x-\hat x\|^2\). Garder la variance maximale revient à la rendre minimale.</p>`, String.raw`z=u^{\top}(x-\bar x)\qquad\text{avec } u \text{ la direction de variance maximale}`);
+      const images = worked('acp-images', 'De 64 nombres à 2', [{type: 'acp-images-story'}]);
+      const why = simple('why-acp', 'Pourquoi l’ACP ?', String.raw`<p>Beaucoup de mesures : on veut les <strong>voir</strong>, les <strong>compresser</strong> ou enlever le bruit.</p><p>L’ACP crée quelques nouvelles variables, des combinaisons des anciennes, qui gardent le plus de variance. Sans étiquette : elle est <strong>non supervisée</strong>.</p><p>Garder le plus de variance, c’est perdre le moins quand on recolle l’image.</p>`, String.raw`z=u^{\top}(x-\bar x)\qquad\text{avec } u \text{ la direction de variance maximale}`, 'On retranche le centre de gravité, puis on projette sur l’axe : z est la position de l’ombre de x.');
       const ex = worked('acp-exemple', 'Exemple pas à pas', steps('Une matrice de covariance 2 × 2', [
-        String.raw`Données centrées de covariance \(\Sigma=\begin{pmatrix}2&1\\1&2\end{pmatrix}\).`,
-        String.raw`Valeurs propres : \((2-\lambda)^2-1=0\), donc \(\lambda_1=3\) et \(\lambda_2=1\).`,
-        String.raw`Premier axe : \(\Sigma u=3u\) donne \(u=\tfrac1{\sqrt2}(1,1)\), la diagonale.`,
-        String.raw`Information gardée : \(\dfrac{\lambda_1}{\lambda_1+\lambda_2}=\dfrac34=75\,\%\).`,
-        String.raw`Le point centré \(x=(1,3)\) devient \(z=u^{\top}x=\dfrac{1+3}{\sqrt2}\approx2{,}83\).`]));
-      const slides = [story, why, ex].map(x => ({...x, fresh: false}));
+        String.raw`Le nuage est centré. Sa forme est résumée par \(\Sigma=\begin{pmatrix}2&1\\1&2\end{pmatrix}\).`,
+        String.raw`Les variances des deux axes sont les valeurs propres : \((2-\lambda)^2-1=0\), donc \(\lambda_1=3\) et \(\lambda_2=1\).`,
+        String.raw`Le premier axe est la direction que \(\Sigma\) ne fait pas tourner : \(\Sigma u=3u\) donne \(u=\tfrac1{\sqrt2}(1,1)\), la diagonale.`,
+        String.raw`Variance gardée : \(\dfrac{\lambda_1}{\lambda_1+\lambda_2}=\dfrac34=75\,\%\).`,
+        String.raw`Le point centré \(x=(1,3)\) a son ombre en \(z=u^{\top}x=\dfrac{1+3}{\sqrt2}\approx2{,}83\).`]));
+      const slides = [story, images, why, ex].map(x => ({...x, fresh: false}));
       return {...byId.multiclasses, id: 'acp', title: 'ACP : réduire sans étiquette', duration: 10, fresh: false,
         intro: 'Un algorithme linéaire non supervisé : résumer des données par quelques axes qui gardent le plus de variance.',
         objective: 'Expliquer ce que maximise l’ACP et lire la part de variance gardée.', outcome: 'Expliquer l’ACP et la variance gardée.',

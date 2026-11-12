@@ -633,13 +633,28 @@
     const d = Math.sqrt(((a - c) / 2) ** 2 + b * b), l1 = (a + c) / 2 + d, l2 = (a + c) / 2 - d, ang = 0.5 * Math.atan2(2 * b, a - c) * 180 / Math.PI;
     return {m: {x1: m1, x2: m2}, a, b, c, l1, l2, ang, total: a + c, varAt: deg => { const t = deg * Math.PI / 180, u = Math.cos(t), v = Math.sin(t); return a * u * u + 2 * b * u * v + c * v * v; }};
   })();
-  const pcaShared = {theta: 40, reveal: false};
+  /* Ce que Σ fait à une direction, avec la vraie matrice de covariance du nuage. */
+  const sigmaFig = (() => {
+    const pxArrow = (x1, y1, x2, y2, color, w) => { const a = Math.atan2(y2 - y1, x2 - x1), tip = s => (x2 - 9 * Math.cos(a + s)).toFixed(1) + ' ' + (y2 - 9 * Math.sin(a + s)).toFixed(1); return '<path d="M' + x1 + ' ' + y1 + 'L' + x2.toFixed(1) + ' ' + y2.toFixed(1) + '" stroke="' + color + '" stroke-width="' + w + '" stroke-linecap="round"/><path d="M' + tip(-.45) + 'L' + x2.toFixed(1) + ' ' + y2.toFixed(1) + 'L' + tip(.45) + 'Z" fill="' + color + '"/>'; };
+    const panel = (ox, oy, deg, title, note) => {
+      const t = deg * Math.PI / 180, u = [Math.cos(t), Math.sin(t)], su = [PCA.a * u[0] + PCA.b * u[1], PCA.b * u[0] + PCA.c * u[1]], k = 12;
+      const ex = ox + k * su[0], ey = oy - k * su[1];
+      return '<text x="' + (ox - 16) + '" y="20" font-weight="700" font-size="14" fill="' + COL.ink + '">' + title + '</text><text x="' + (ox - 16) + '" y="150" font-size="14" fill="' + COL.muted + '">' + note + '</text>' +
+        pxArrow(ox, oy, ex, ey, COL.cat, 4) + pxArrow(ox, oy, ox + 28 * u[0], oy - 28 * u[1], COL.ink, 2.2) +
+        '<text x="' + (ex + 2).toFixed(1) + '" y="' + (ey + 20).toFixed(1) + '" font-size="14" font-weight="700" fill="' + COL.cat + '">Σu</text>' + (deg > 0 ? '<text x="' + (ox + 24 * u[0] + 4).toFixed(1) + '" y="' + (oy - 24 * u[1] - 6).toFixed(1) + '" font-size="14" font-weight="700" fill="' + COL.ink + '">u</text>' : '');
+    };
+    return '<svg viewBox="0 0 400 160" style="display:block;width:100%;max-width:440px;margin:.4em 0 .8em" role="img" aria-label="Une direction quelconque est tournée par la matrice de covariance ; l’axe 1 est seulement allongé.">' +
+      panel(30, 88, 40, 'Une direction quelconque', 'Σ la fait tourner.') + panel(225, 62, PCA.ang, 'L’axe 1', 'Σ l’allonge seulement : × ' + fr(PCA.l1, 1)) + '</svg>';
+  })();
+  const pcaShared = {theta: 40, reveal: false, gx: 4.5, gy: 6.5};
   const pcaSpec = {
     id: 'pca-story', kicker: 'ACP · RÉSUMER SANS ÉTIQUETTE', noDrag: true,
     footnote: 'ACP sur les 24 animaux d’apprentissage, variables brutes (kg, cm). En pratique on standardise souvent les variables avant l’ACP, pour qu’aucune unité ne domine.',
     stages: [
       {title: 'Des points sans étiquette', html: String.raw`<p>On n’a que les mesures, sans savoir qui est chat ou chien.</p><p>Question : peut-on résumer chaque animal par <strong>un seul nombre</strong> sans perdre l’essentiel ?</p>`},
-      {title: 'Choisir une direction', html: String.raw`<p>On projette chaque animal sur une droite qui passe par le centre du nuage.</p><p>Tournez la droite : plus les projections sont <strong>étalées</strong>, plus on garde d’information.</p>`,
+      {title: 'Le centre de gravité', html: String.raw`<p>L’axe passera par le milieu du nuage : son <strong>centre de gravité</strong> \(G\).</p><p>Déplacez la croix jusqu’à annuler les écarts.</p>`,
+        details: {title: 'Le calcul', html: String.raw`<p>\(G\) est la moyenne de chaque variable : ${fr(PCA.m.x1, 2)} kg et ${fr(PCA.m.x2, 2)} cm.</p><p><strong>Centrer</strong>, c’est retrancher \(G\) à chaque animal : \(G\) devient l’origine.</p>`}},
+      {title: 'Choisir une direction', html: String.raw`<p>On projette chaque animal sur une droite qui passe par \(G\).</p><p>Tournez la droite : plus les projections sont <strong>étalées</strong>, plus on garde d’information.</p>`,
         prompt: 'Quelle direction garde le plus d’information ?',
         choices: [
           {t: 'celle où les projections sont le plus serrées', why: 'Des projections serrées se confondent : on ne distingue plus les animaux.'},
@@ -647,42 +662,61 @@
           {t: 'n’importe laquelle, cela revient au même', why: 'Tournez la droite : l’étalement (la variance) change beaucoup selon la direction.'}],
         answer: String.raw`On garde la direction de <strong>variance maximale</strong> : c’est le premier axe principal.`},
       {title: 'Le premier axe', html: String.raw`<p>La meilleure direction est le <strong>premier axe principal</strong>. Le second lui est perpendiculaire.</p><p>Ici, le premier axe garde environ <strong>83 %</strong> de la variance totale.</p>`,
-        details: {title: 'Comment on le calcule', html: String.raw`<p>On centre les données, on calcule leur matrice de covariance \(\Sigma\), et on prend son vecteur propre de plus grande valeur propre \(\lambda_1\). La part de variance gardée vaut \(\lambda_1/(\lambda_1+\lambda_2)\).</p>`}},
-      {title: 'Un seul nombre par animal', html: String.raw`<p>Chaque animal devient sa coordonnée sur le premier axe.</p><p>Révélez les espèces : chats et chiens se séparent déjà, <strong>sans qu’on ait utilisé les étiquettes</strong>.</p>`}
+        details: {title: 'Les maths, en clair', html: sigmaFig + String.raw`<p>La matrice de covariance \(\Sigma\) résume la <strong>forme du nuage</strong>.</p><p>Donnez-lui une direction : elle la fait tourner vers le côté allongé du nuage. Seuls les axes de l’ACP ne tournent pas : \(\Sigma u=\lambda u\). Ce sont les <strong>vecteurs propres</strong>.</p><p>\(\lambda\) est la largeur de l’ombre sur l’axe (sa variance). Part gardée : \(\dfrac{\lambda_1}{\lambda_1+\lambda_2}=\dfrac{${tx(PCA.l1, 1)}}{${tx(PCA.total, 1)}}\approx${Math.round(PCA.l1 / PCA.total * 100)}\,\%\).</p>`}},
+      {title: 'Un seul nombre par animal', html: String.raw`<p>Chaque animal devient sa coordonnée sur le premier axe.</p><p>Révélez les espèces : chats et chiens se séparent déjà, <strong>sans qu’on ait utilisé les étiquettes</strong>.</p><p>Ici, ce qui varie le plus est justement l’espèce. Ce n’est pas garanti.</p>`}
     ],
     shared: pcaShared,
-    reset() { Object.assign(pcaShared, {theta: 40, reveal: false}); },
-    canonical(stage) { return {theta: stage >= 2 ? Math.round(PCA.ang) : 40, reveal: stage === 3}; },
+    reset() { Object.assign(pcaShared, {theta: 40, reveal: false, gx: 4.5, gy: 6.5}); },
+    canonical(stage) { return {theta: stage >= 3 ? Math.round(PCA.ang) : 40, reveal: stage === 4, gx: stage === 1 ? 4.5 : Math.round(PCA.m.x1 * 10) / 10, gy: stage === 1 ? 6.5 : Math.round(PCA.m.x2 * 10) / 10}; },
     init() {},
     controls(ctx) {
-      if (ctx.stage === 1) return slider('theta', 'Direction', ctx.state.theta, -90, 90, 1, ctx.state.theta + '°');
-      if (ctx.stage === 3) return '<button type="button" class="as-button" data-reveal aria-pressed="' + ctx.state.reveal + '">' + (ctx.state.reveal ? 'Masquer les espèces' : 'Révéler les espèces') + '</button>';
+      if (ctx.stage === 1) return slider('gx', 'Poids de la croix', ctx.state.gx, D.x1[0], D.x1[1], .1, fr(ctx.state.gx, 1) + ' kg') + slider('gy', 'Pelage de la croix', ctx.state.gy, D.x2[0], D.x2[1], .1, fr(ctx.state.gy, 1) + ' cm');
+      if (ctx.stage === 2) return slider('theta', 'Direction', ctx.state.theta, -90, 90, 1, ctx.state.theta + '°');
+      if (ctx.stage === 4) return '<button type="button" class="as-button" data-reveal aria-pressed="' + ctx.state.reveal + '">' + (ctx.state.reveal ? 'Masquer les espèces' : 'Révéler les espèces') + '</button>';
       return '';
     },
     wire(ctx) {
+      wireRange(ctx, 'gx', v => { ctx.state.gx = v; }, v => fr(v, 1) + ' kg');
+      wireRange(ctx, 'gy', v => { ctx.state.gy = v; }, v => fr(v, 1) + ' cm');
       wireRange(ctx, 'theta', v => { ctx.state.theta = v; }, v => v + '°');
       ctx.controls.querySelector('[data-reveal]')?.addEventListener('click', () => { ctx.state.reveal = !ctx.state.reveal; ctx.commit({controls: true}); }, {signal: ctx.signal});
     },
     draw(ctx) {
-      const st = ctx.stage, s = ctx.state, deg = st >= 2 ? PCA.ang : s.theta, t = deg * Math.PI / 180, u = {x1: Math.cos(t), x2: Math.sin(t)}, M = PCA.m;
+      const st = ctx.stage, s = ctx.state, deg = st >= 3 ? PCA.ang : s.theta, t = deg * Math.PI / 180, u = {x1: Math.cos(t), x2: Math.sin(t)}, M = PCA.m;
       const far = k => ({x1: M.x1 + k * u.x1, x2: M.x2 + k * u.x2});
       let lines = '', over = '';
-      if (st >= 1) {
+      const gapX = M.x1 - s.gx, gapY = M.x2 - s.gy, found = ctx.isStatic || (Math.abs(gapX) <= .15 && Math.abs(gapY) <= .15);
+      const mark = (p, color) => { const x = X(p.x1), y = Y(p.x2); return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="8" fill="#fff" stroke="' + color + '" stroke-width="2.4"/><path d="M' + (x - 5).toFixed(1) + ' ' + y.toFixed(1) + 'H' + (x + 5).toFixed(1) + 'M' + x.toFixed(1) + ' ' + (y - 5).toFixed(1) + 'V' + (y + 5).toFixed(1) + '" stroke="' + color + '" stroke-width="2"/><text x="' + (x + 12).toFixed(1) + '" y="' + (y - 10).toFixed(1) + '" font-weight="700" font-size="16" fill="' + color + '">G</text>'; };
+      if (st === 1) {
+        const g0 = found ? M : {x1: s.gx, x2: s.gy};
+        if (found) lines += seg({x1: D.x1[0], x2: M.x2}, {x1: D.x1[1], x2: M.x2}, COL.guide, 1.4, '5 5') + seg({x1: M.x1, x2: D.x2[0]}, {x1: M.x1, x2: D.x2[1]}, COL.guide, 1.4, '5 5');
+        train.forEach(a => { lines += seg(a, g0, '#c9ccd3', 1.2); });
+        lines += mark(g0, found ? COL.dog : COL.error);
+      }
+      if (st >= 2) {
         lines += seg(far(-9), far(9), COL.cat, 2.6);
-        if (st >= 2) { const v = {x1: -u.x2, x2: u.x1}; lines += seg({x1: M.x1 - 6 * v.x1, x2: M.x2 - 6 * v.x2}, {x1: M.x1 + 6 * v.x1, x2: M.x2 + 6 * v.x2}, COL.guide, 1.4, '5 5'); }
-        train.forEach(a => { const k = (a.x1 - M.x1) * u.x1 + (a.x2 - M.x2) * u.x2, f = far(k); lines += seg(a, f, '#c9ccd3', 1.2) + '<circle cx="' + X(f.x1).toFixed(1) + '" cy="' + Y(f.x2).toFixed(1) + '" r="3.2" fill="' + (st === 3 && s.reveal ? (a.y ? COL.dog : COL.cat) : COL.ink) + '"/>'; });
+        if (st >= 3) { const v = {x1: -u.x2, x2: u.x1}; lines += seg({x1: M.x1 - 6 * v.x1, x2: M.x2 - 6 * v.x2}, {x1: M.x1 + 6 * v.x1, x2: M.x2 + 6 * v.x2}, COL.guide, 1.4, '5 5'); }
+        train.forEach(a => { const k = (a.x1 - M.x1) * u.x1 + (a.x2 - M.x2) * u.x2, f = far(k); lines += seg(a, f, '#c9ccd3', 1.2) + '<circle cx="' + X(f.x1).toFixed(1) + '" cy="' + Y(f.x2).toFixed(1) + '" r="3.2" fill="' + (st === 4 && s.reveal ? (a.y ? COL.dog : COL.cat) : COL.ink) + '"/>'; });
+        lines += mark(M, COL.ink);
       }
       setLines(ctx, lines);
-      placeDots(ctx, train.map(a => ({id: a.id, x: X(a.x1), y: Y(a.x2), hideLabel: !(st === 3 && s.reveal), opacity: st >= 1 ? .55 : 1, aria: 'Animal, ' + measures(a)})));
+      placeDots(ctx, train.map(a => ({id: a.id, x: X(a.x1), y: Y(a.x2), hideLabel: !(st === 4 && s.reveal), opacity: st >= 2 ? .55 : 1, aria: 'Animal, ' + measures(a)})));
       setOverlay(ctx, over);
-      ctx.svg.querySelector('desc').textContent = 'Nuage des animaux et direction de projection.';
+      ctx.svg.querySelector('desc').textContent = st === 1 ? 'Nuage des animaux et croix à placer au centre de gravité.' : 'Nuage des animaux, centre de gravité et direction de projection.';
       const v = PCA.varAt(deg), pct = v / PCA.total;
       if (st === 0) { ctx.side.innerHTML = '<p class="as-side-caption">24 animaux, 2 mesures chacun, aucune étiquette.</p>'; ctx.readout.innerHTML = '<strong>Deux nombres par animal</strong><span>Peut-on n’en garder qu’un ?</span>'; }
-      if (st >= 1 && st <= 2) {
-        ctx.side.innerHTML = '<div class="as-bars"><div class="as-bar-row"><span class="as-bar-label">variance gardée</span><span class="as-bar-track"><i style="width:' + (pct * 100).toFixed(1) + '%;background:' + COL.cat + '"></i></span><span class="as-bar-value">' + Math.round(pct * 100) + ' %</span></div></div>' + goal(st === 1 && pct > .82, st === 1 ? (pct > .82 ? 'Bravo : direction de variance maximale.' : 'Défi : garder plus de 82 % de la variance.') : 'Axe 1 : ' + Math.round(pct * 100) + ' % de la variance.');
+      if (st === 1) {
+        const signed = (v, unit) => (v > 0 ? '+' : '') + fr(v, 1) + ' ' + unit;
+        const row = (y, v, big, text) => { const x = 120 + clamp(v / big, -1, 1) * 100; return '<text x="6" y="' + (y - 12) + '" class="as-tick">' + text + '</text><path d="M20 ' + y + 'H220M120 ' + (y - 7) + 'V' + (y + 7) + '" stroke="' + COL.axis + '" stroke-width="1.6"/><circle cx="' + x.toFixed(1) + '" cy="' + y + '" r="6" fill="' + (found ? COL.dog : COL.error) + '"/>'; };
+        const shownX = found ? 0 : gapX, shownY = found ? 0 : gapY;
+        ctx.side.innerHTML = sideFig(240, 96, row(32, shownX, 6, 'Écart moyen en poids : ' + signed(shownX, 'kg')) + row(82, shownY, 4, 'Écart moyen en pelage : ' + signed(shownY, 'cm')), 'Écarts moyens des animaux à la croix, en poids et en pelage.') + goal(found, found ? 'Bravo : c’est le centre de gravité.' : 'Ramener les deux écarts à zéro.');
+        ctx.readout.innerHTML = found ? '<strong>\\(G=(\\bar x_1,\\bar x_2)=(' + tx(M.x1) + '\\ ;\\ ' + tx(M.x2) + ')\\)</strong><span>La moyenne de chaque variable : ' + fr(M.x1, 2) + ' kg, ' + fr(M.x2, 2) + ' cm.</span>' : '<strong>Croix en (' + fr(s.gx, 1) + ' kg ; ' + fr(s.gy, 1) + ' cm)</strong><span>Point rouge à droite : déplacez la croix vers la droite (ou vers le haut).</span>';
+      }
+      if (st >= 2 && st <= 3) {
+        ctx.side.innerHTML = '<div class="as-bars"><div class="as-bar-row"><span class="as-bar-label">variance gardée</span><span class="as-bar-track"><i style="width:' + (pct * 100).toFixed(1) + '%;background:' + COL.cat + '"></i></span><span class="as-bar-value">' + Math.round(pct * 100) + ' %</span></div></div>' + goal(st === 2 && pct > .82, st === 2 ? (pct > .82 ? 'Bravo : direction de variance maximale.' : 'Garder plus de 82 % de la variance.') : 'Axe 1 : ' + Math.round(pct * 100) + ' % de la variance.');
         ctx.readout.innerHTML = '<strong>Variance des projections : ' + fr(v, 2) + '</strong><span>Sur un total de ' + fr(PCA.total, 2) + '.</span>';
       }
-      if (st === 3) { ctx.side.innerHTML = '<p class="as-side-caption">' + (s.reveal ? 'Chats d’un côté, chiens de l’autre : l’axe 1 suit surtout le poids.' : 'Chaque point sur l’axe est un animal résumé par un seul nombre.') + '</p>'; ctx.readout.innerHTML = '<strong>Un nombre par animal : sa coordonnée sur l’axe 1</strong><span>' + Math.round(PCA.l1 / PCA.total * 100) + ' % de l’information gardée.</span>'; }
+      if (st === 4) { ctx.side.innerHTML = '<p class="as-side-caption">' + (s.reveal ? 'Chats d’un côté, chiens de l’autre : l’axe 1 suit surtout le poids.' : 'Chaque point sur l’axe est un animal résumé par un seul nombre.') + '</p>'; ctx.readout.innerHTML = '<strong>Un nombre par animal : sa coordonnée sur l’axe 1</strong><span>' + Math.round(PCA.l1 / PCA.total * 100) + ' % de l’information gardée.</span>'; }
     }
   };
 

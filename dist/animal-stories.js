@@ -307,7 +307,7 @@
   // Place les glyphes ; options par animal : position, visible, révélé, anneau, halo.
   function placeDots(ctx, list) {
     const dots = ctx.svg.querySelector('.as-dots');
-    if (!dots.children.length) dots.innerHTML = A.animals.concat(A.rabbits).map(a => dotMarkup(a, animalName(a) + ', ' + measures(a))).join('') + dotMarkup(unknownAnimal, 'Animal inconnu');
+    if (!dots.children.length) dots.innerHTML = A.animals.concat(A.rabbits, A.visitors).map(a => dotMarkup(a, animalName(a) + ', ' + measures(a))).join('') + dotMarkup(unknownAnimal, 'Animal inconnu');
     const seen = new Set();
     list.forEach(o => {
       seen.add(String(o.id));

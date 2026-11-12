@@ -399,6 +399,312 @@ tests(heures, residus)`, expected: 'Shapiro-Wilk (normalité) : p = 0.609\nBreus
           ],
           hint: [{p: String.raw`$\alpha_1y_1+\alpha_2y_2=0$ donne $\alpha_1=\alpha_2$.`}]}
       ]
+    },
+    'non-lineaires': {
+      title: 'TD 3 · Algorithmes non linéaires',
+      lead: 'Arbres, voisins, noyaux et K-means : d’abord sur papier, puis on vérifie en Python.',
+      duration: '1 h 30',
+      notebook: 'sid34-td3-non-lineaires.ipynb',
+      original: false,
+      exercises: [
+        {
+          n: 8, title: 'Trois arbres de régression', lesson: 'arbres', minutes: 10,
+          parts: [
+            {ai: 'off'},
+            {p: 'Un modèle a été entraîné à l’aide de trois arbres de décision sur des données en deux dimensions.'},
+            {table: {head: ['Arbre 1', 'Arbre 2', 'Arbre 3'], rows: [
+              ['$x_1<4$ ?', '$x_2<5$ ?', '$x_1<2$ ?'],
+              ['oui → $x_2<3$ ? oui : $y=4$ · non : $y=1$', 'oui → $x_1<1$ ? oui : $y=0$ · non : $y=2$', 'oui → $x_2<5$ ? oui : $y=5$ · non : $y=2$'],
+              ['non → $x_2<5$ ? oui : $y=8$ · non : $y=4$', 'non → $x_1<2$ ? oui : $y=-1$ · non : $y=3$', 'non → $x_2<3$ ? oui : $y=2$ · non : $y=3$']]}},
+            {ol: [
+              'Représenter la partition de l’espace correspondant à chacun de ces arbres.',
+              'Quelle est la prédiction faite par chacun de ces arbres pour l’observation $(3\\,;\\,2)$ ?'
+            ]},
+            {p: 'Vérifiez votre dessin : la cellule trace l’arbre 1. Complétez les arbres 2 et 3.'},
+            {cell: {id: 'td3arbres', todo: true, code: String.raw`import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+def dessiner(feuilles, titre):
+    fig, ax = plt.subplots(figsize=(4, 4))
+    for (x1_min, x1_max, x2_min, x2_max, valeur) in feuilles:
+        ax.add_patch(Rectangle((x1_min, x2_min), x1_max - x1_min, x2_max - x2_min, fill=False))
+        ax.text((x1_min + x1_max) / 2, (x2_min + x2_max) / 2, f"y = {valeur}", ha="center", va="center")
+    ax.plot(3, 2, "r*", ms=14)                     # l'observation (3 ; 2)
+    ax.set_xlim(0, 8); ax.set_ylim(0, 8)
+    ax.set_xlabel("x1"); ax.set_ylabel("x2"); ax.set_title(titre)
+    plt.show()
+
+# une feuille = un rectangle (x1 min, x1 max, x2 min, x2 max, valeur)
+dessiner([(0, 4, 0, 3, 4), (0, 4, 3, 8, 1), (4, 8, 0, 5, 8), (4, 8, 5, 8, 4)], "Arbre 1")
+# dessiner([...], "Arbre 2")
+# dessiner([...], "Arbre 3")
+`}}
+          ],
+          hint: [{p: 'Chaque feuille est un rectangle. Le premier test coupe tout le plan en deux ; le second test ne coupe que sa moitié.'}]},
+        {
+          n: 9, title: 'Gini ou entropie ?', lesson: 'arbres', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {p: 'Classification binaire. À un nœud, $p$ est la proportion d’exemples positifs.'},
+            {math: String.raw`G(p)=1-\big(p^2+(1-p)^2\big)=2p(1-p)\qquad H(p)=-p\log_2 p-(1-p)\log_2(1-p)`},
+            {h: '1 · Calculs'},
+            {ol: [
+              'Calculer $G(p)$ et $H(p)$ pour $p\\in\\{0\\,;\\,0{,}1\\,;\\,0{,}25\\,;\\,0{,}5\\,;\\,0{,}75\\,;\\,0{,}9\\,;\\,1\\}$ ($H$ à $10^{-3}$ près).',
+              'Pour quelles valeurs de $p$ l’impureté est-elle maximale ? minimale ?'
+            ]},
+            {h: '2 · Gain d’impureté'},
+            {p: 'Nœud parent : $N=20$ exemples, $8$ positifs et $12$ négatifs. On hésite entre deux séparations :'},
+            {ul: ['**Split A** : $(10 : 1+,\\,9-)$ et $(10 : 7+,\\,3-)$.', '**Split B** : $(8 : 4+,\\,4-)$ et $(12 : 4+,\\,8-)$.']},
+            {math: String.raw`\Delta I = I(\text{parent})-\Big(\tfrac{N_L}{N}I(L)+\tfrac{N_R}{N}I(R)\Big)`},
+            {ol: [
+              'Calculer $p_{\\text{parent}}$, $p_L$, $p_R$ pour chaque split.',
+              'Calculer $\\Delta I$ avec Gini puis avec l’entropie, pour A et pour B. Quel split est préféré par chaque critère ?',
+              'Dans quel cas Gini et entropie peuvent-ils diverger ?'
+            ]},
+            {h: '3 · Vérifier et regarder les courbes'},
+            {cell: {id: 'td3gini', code: String.raw`import numpy as np
+import matplotlib.pyplot as plt
+
+def G(p):
+    return 2 * p * (1 - p)
+
+def H(p):
+    p = np.clip(p, 1e-12, 1 - 1e-12)          # évite log(0)
+    return -p * np.log2(p) - (1 - p) * np.log2(1 - p)
+
+for p in [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]:
+    print(f"p = {p:<4}  G = {G(p):.3f}  H = {H(p):.3f}")
+
+p = np.linspace(0, 1, 201)
+plt.plot(p, G(p), label="Gini G(p)")
+plt.plot(p, H(p), label="Entropie H(p)")
+plt.plot(p, H(p) / 2, "--", label="H(p) / 2")
+plt.xlabel("p (proportion de positifs)"); plt.legend(); plt.show()`, expected: 'p = 0     G = 0.000  H = 0.000\np = 0.1   G = 0.180  H = 0.469\np = 0.25  G = 0.375  H = 0.811\np = 0.5   G = 0.500  H = 1.000\np = 0.75  G = 0.375  H = 0.811\np = 0.9   G = 0.180  H = 0.469\np = 1     G = 0.000  H = 0.000'}},
+            {cell: {id: 'td3gain', code: String.raw`def gain(I, parent, enfants):
+    # parent = (positifs, total) ; enfants = [(positifs, total), ...]
+    N = parent[1]
+    return I(parent[0] / N) - sum(n / N * I(pos / n) for pos, n in enfants)
+
+for nom, enfants in [("A", [(1, 10), (7, 10)]), ("B", [(4, 8), (4, 12)])]:
+    print(f"Split {nom} : gain Gini = {gain(G, (8, 20), enfants):.4f}   gain entropie = {gain(H, (8, 20), enfants):.4f}")`, expected: 'Split A : gain Gini = 0.1800   gain entropie = 0.2958\nSplit B : gain Gini = 0.0133   gain entropie = 0.0200'}},
+            {ol: [
+              'Relier la forme des courbes au fait qu’un nœud « pur » ($p$ proche de 0 ou de 1) est facile à classer.',
+              'Comparer $G(p)$ et $H(p)/2$ : laquelle pénalise davantage un nœud un peu impur ?'
+            ]}
+          ],
+          hint: [{p: 'Split A : $p_L=0{,}1$ et $p_R=0{,}7$, les deux enfants pèsent $10/20$. Les valeurs de $G$ et $H$ pour $0{,}1$ sont dans le tableau du 1.'}]},
+        {
+          n: 10, title: 'Thé ou café ?', lesson: 'voisins', minutes: 10,
+          parts: [
+            {ai: 'off'},
+            {p: 'Mohamed veut prédire si une boisson est un thé ou un café. Il a recueilli les données suivantes :'},
+            {table: {head: ['Volume (mL)', '250', '100', '125', '250'], rows: [
+              ['Caféine (g)', '0,025', '0,01', '0,05', '0,1'],
+              ['Boisson', 'Thé', 'Thé', 'Café', 'Café']]}},
+            {ol: [
+              'Avec le plus proche voisin et la distance euclidienne, quelle étiquette est prédite pour une boisson de $125$ mL contenant $0{,}015$ g de caféine ?',
+              'Cette classification ne lui semble pas correcte. Que peut-il faire pour y remédier ?'
+            ]},
+            {cell: {id: 'td3the', todo: true, code: String.raw`import numpy as np
+
+X = np.array([[250, 0.025], [100, 0.01], [125, 0.05], [250, 0.1]])
+y = np.array(["Thé", "Thé", "Café", "Café"])
+q = np.array([125, 0.015])
+
+d = np.sqrt(((X - q) ** 2).sum(axis=1))
+print("Distances :", [round(float(v), 3) for v in d], "->", y[d.argmin()])
+
+# À vous : ramener chaque variable entre 0 et 1 (min-max), puis recalculer le plus proche voisin
+`, expected: 'Distances : [125.0, 25.0, 0.035, 125.0] -> Café\nDistances après min-max : [0.841, 0.176, 0.389, 1.26] -> Thé'}}
+          ],
+          hint: [{p: 'Comparez les écarts de volume (en dizaines de mL) aux écarts de caféine (en centièmes de g). Qui décide de la distance ?'}]},
+        {
+          n: 11, title: 'Manhattan ou euclidienne ?', lesson: 'voisins', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {table: {head: ['$x_1$', '1', '2', '2', '2', '3'], rows: [
+              ['$x_2$', '2', '1', '2', '3', '1'],
+              ['$y$', '$+$', '$-$', '$-$', '$-$', '$+$']]}},
+            {box: {title: 'Distance de Manhattan', parts: [
+              {math: String.raw`d_1(x,x')=|x_1-x_1'|+|x_2-x_2'|`}
+            ]}},
+            {ol: [
+              'Comment la frontière de décision du plus proche voisin change-t-elle avec la distance de Manhattan plutôt qu’euclidienne ?',
+              'Même question pour les 3 plus proches voisins.',
+              'Le nombre d’erreurs de ces deux classifieurs sur le jeu d’entraînement change-t-il ?',
+              'L’étiquette du point $(0{,}5\\,;\\,0)$ change-t-elle ?'
+            ]},
+            {p: 'Vérifiez : la cellule colorie le plan (bleu $+$, rouge $-$, gris = égalité de distances, étiquette indécise). L’étoile est $(0{,}5\\,;\\,0)$.'},
+            {cell: {id: 'td3manhattan', code: String.raw`import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from itertools import combinations
+
+P = np.array([[1, 2], [2, 1], [2, 2], [2, 3], [3, 1]])
+yP = np.array([1, -1, -1, -1, 1])                 # + = 1, - = -1
+
+def distances(a, metrique):
+    ecart = np.abs(P - a)
+    return ecart.sum(axis=1) if metrique == "manhattan" else np.sqrt((ecart ** 2).sum(axis=1))
+
+def predire(a, k, metrique):
+    d = distances(a, metrique)
+    seuil = np.sort(d)[k - 1]                     # distance du k-ième voisin
+    surs = yP[d < seuil - 1e-9]                   # voisins certains
+    egaux = yP[np.abs(d - seuil) < 1e-9]          # ex aequo au k-ième rang
+    votes = {int(np.sign(surs.sum() + sum(c))) for c in combinations(egaux, k - len(surs))}
+    return votes.pop() if len(votes) == 1 else 0  # 0 : étiquette indécise
+
+x1, x2 = np.meshgrid(np.linspace(0, 4, 101), np.linspace(-0.5, 4, 101))
+grille = np.c_[x1.ravel(), x2.ravel()]
+couleurs = ListedColormap(["#f4b6b6", "#d9d9d9", "#b6cdf4"])   # -, indécis, +
+fig, ax = plt.subplots(2, 2, figsize=(9, 9))
+for i, k in enumerate([1, 3]):
+    for j, metrique in enumerate(["euclidienne", "manhattan"]):
+        z = np.array([predire(a, k, metrique) for a in grille]).reshape(x1.shape)
+        ax[i, j].pcolormesh(x1, x2, z, cmap=couleurs, vmin=-1, vmax=1, shading="auto")
+        ax[i, j].scatter(*P[yP > 0].T, marker="+", s=120, c="blue")
+        ax[i, j].scatter(*P[yP < 0].T, marker="_", s=120, c="red")
+        ax[i, j].plot(0.5, 0, "k*", ms=12)
+        ax[i, j].set_title(f"{k}-NN, distance {metrique}"); ax[i, j].set_aspect("equal")
+plt.tight_layout(); plt.show()
+
+nom = {1: "+", -1: "-", 0: "indécis"}
+for metrique in ["euclidienne", "manhattan"]:
+    for k in [1, 3]:
+        erreurs = sum(predire(P[i], k, metrique) != yP[i] for i in range(len(P)))
+        print(f"{metrique:<11} {k}-NN : {erreurs} erreur(s) ; (0,5 ; 0) -> {nom[predire(np.array([0.5, 0]), k, metrique)]}")`, expected: 'euclidienne 1-NN : 0 erreur(s) ; (0,5 ; 0) -> -\neuclidienne 3-NN : 2 erreur(s) ; (0,5 ; 0) -> -\nmanhattan   1-NN : 0 erreur(s) ; (0,5 ; 0) -> indécis\nmanhattan   3-NN : 2 erreur(s) ; (0,5 ; 0) -> indécis'}}
+          ],
+          hint: [{p: 'Pour $(0{,}5\\,;\\,0)$ avec Manhattan : calculer $d_1$ jusqu’à $(1,2)$ et jusqu’à $(2,1)$. Sur le jeu d’entraînement, un point est son propre plus proche voisin.'}]},
+        {
+          n: 12, title: 'Soulever des points en 1D', lesson: 'noyaux', minutes: 10,
+          parts: [
+            {ai: 'off'},
+            {p: 'Deux classes en dimension 1 : classe 1 $=\\{-5\\,;\\,5\\}$, classe 2 $=\\{-2\\,;\\,1\\}$.'},
+            {ol: [
+              'Tracer ces points. Sont-ils linéairement séparables ?',
+              'Avec $f(x)=(x,x^2)$, transformer et tracer les points. Sont-ils linéairement séparables ?',
+              'Écrire l’équation de l’hyperplan optimal de séparation.',
+              'Cet hyperplan correspond-il à une frontière non linéaire dans l’espace d’origine ?'
+            ]},
+            {cell: {id: 'td3lift', code: String.raw`import numpy as np
+from sklearn.svm import SVC
+
+x = np.array([-5, 5, -2, 1])
+classe = np.array([1, 1, -1, -1])          # classe 1 -> +1, classe 2 -> -1
+Z = np.c_[x, x ** 2]                       # f(x) = (x, x²)
+svm = SVC(kernel="linear", C=1e6).fit(Z, classe)   # C très grand : marge dure
+w, b = svm.coef_[0], svm.intercept_[0]
+print("w =", (w.round(3) + 0.0).tolist(), " b =", round(float(b), 3))
+print("vecteurs de support :", svm.support_vectors_.tolist())`, expected: 'w = [0.0, 0.095]  b = -1.381\nvecteurs de support : [[-2.0, 4.0], [-5.0, 25.0], [5.0, 25.0]]'}}
+          ],
+          hint: [{p: 'Après $f$ : $(-5,25)$, $(5,25)$, $(-2,4)$, $(1,1)$. Regardez seulement la 2ᵉ coordonnée.'}]},
+        {
+          n: 13, title: 'Deux transformations φ', lesson: 'noyaux', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {h: 'Problème 1 · Cercles concentriques'},
+            {p: 'Une classe sur un cercle de rayon $1$, l’autre sur un cercle de rayon $0{,}5$. On pose $\\phi(x_1,x_2)=(x_1^2,x_2^2)$.'},
+            {cell: {id: 'td3cercles', code: String.raw`import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(0)
+n = 100
+
+def cercle(rayon):
+    angle = rng.uniform(0, 2 * np.pi, n)
+    return rayon * np.c_[np.cos(angle), np.sin(angle)] + 0.05 * rng.normal(size=(n, 2))
+
+x_grand, x_petit = cercle(1), cercle(0.5)
+phi = lambda x: x ** 2                      # φ(x1, x2) = (x1², x2²)
+
+fig, ax = plt.subplots(1, 2, figsize=(10, 4.5))
+ax[0].plot(*x_grand.T, "bx", label="rayon 1"); ax[0].plot(*x_petit.T, "rx", label="rayon 0,5")
+ax[0].set_title("Espace d’origine"); ax[0].set_aspect("equal"); ax[0].legend()
+ax[1].plot(*phi(x_grand).T, "bx"); ax[1].plot(*phi(x_petit).T, "rx")
+ax[1].set_title("Après φ : (x1², x2²)"); ax[1].set_xlabel("z1"); ax[1].set_ylabel("z2")
+plt.tight_layout(); plt.show()`}},
+            {ol: [
+              'Par un raisonnement géométrique, montrer que ces données ne sont pas linéairement séparables dans l’espace d’origine.',
+              'Calculer $\\|\\phi(x)\\|^2$ en fonction de $x_1$ et $x_2$. Dépend-elle seulement de $\\|x\\|$ ? Quelle combinaison de $z_1,z_2$ ne dépend que de $\\|x\\|$ ?',
+              'Montrer que si $\\|x\\|=r$, alors $z=\\phi(x)$ vérifie $z_1+z_2=r^2$ avec $z_1,z_2\\ge0$. Interpréter dans le plan $(z_1,z_2)$.',
+              'En déduire que les deux classes sont près de deux droites parallèles $z_1+z_2=r_1^2$ et $z_1+z_2=r_2^2$, et proposer un hyperplan séparateur.',
+              'Avec $f(x)=w^\\top\\phi(x)+b$, écrire $f$ en fonction de $x_1,x_2$ et l’équation de la frontière dans l’espace d’origine.',
+              'Quelle est la nature géométrique de cette frontière ?'
+            ]},
+            {h: 'Problème 2 · Demi-lunes'},
+            {p: 'Deux demi-lunes emboîtées. On pose $\\phi(x_1,x_2)=\\big(\\sin x_1,\\,\\sin 3x_2\\big)$.'},
+            {cell: {id: 'td3lunes', code: String.raw`def demi_lune(signe, decalage):
+    angle = rng.uniform(0, 2 * np.pi, n)
+    x = np.c_[np.cos(angle), np.sin(angle)] + 0.05 * rng.normal(size=(n, 2))
+    x[:, 0] = signe * np.abs(x[:, 0])      # on garde une moitié du cercle
+    return x + decalage
+
+x_g, x_d = demi_lune(-1, [0.25, -0.5]), demi_lune(+1, [-0.25, 0.5])
+phi2 = lambda x: np.c_[np.sin(x[:, 0]), np.sin(3 * x[:, 1])]
+
+fig, ax = plt.subplots(1, 2, figsize=(10, 4.5))
+ax[0].plot(*x_g.T, "bx", label="classe 1"); ax[0].plot(*x_d.T, "rx", label="classe 2")
+ax[0].set_title("Espace d’origine : demi-lunes"); ax[0].set_aspect("equal"); ax[0].legend()
+ax[1].plot(*phi2(x_g).T, "bx"); ax[1].plot(*phi2(x_d).T, "rx")
+ax[1].set_title("Après φ : (sin x1, sin 3x2)"); ax[1].set_xlabel("sin x1"); ax[1].set_ylabel("sin 3x2")
+plt.tight_layout(); plt.show()`}},
+            {ol: [
+              'Expliquer, avec la géométrie des données, pourquoi aucun classifieur linéaire ne sépare les deux classes dans l’espace d’origine.',
+              'Quel est l’effet du sinus sur la répartition des points ? Quel est le rôle du facteur $3$ ?',
+              'Écrire $f(x)=w^\\top\\phi(x)+b$ en fonction de $x_1$ et $x_2$.',
+              'Décrire la forme de la frontière dans l’espace d’origine. Pourquoi n’est-ce pas un polynôme de faible degré ?',
+              'Écrire le noyau $K(x,x\')=\\langle\\phi(x),\\phi(x\')\\rangle$. Est-il stationnaire (fonction de $x-x\'$ seulement) ?'
+            ]}
+          ],
+          hint: [{p: 'Cercles : $x_1^2+x_2^2=\\|x\\|^2$. Demi-lunes : un noyau stationnaire vérifie $K(x,x)=$ constante.'}]},
+        {
+          n: 14, title: 'K-means et K-means++', lesson: 'kmeans', minutes: 15,
+          parts: [
+            {ai: 'off'},
+            {box: {title: 'K-means++', parts: [
+              {p: 'K-means dépend de l’initialisation : certains résultats ont une inertie bien plus grande que l’optimum. K-means++ disperse les centroïdes de départ :'},
+              {ol: [
+                'Choisir un premier centroïde $u^1$ au hasard parmi les observations.',
+                'Pour $k=2,\\dots,K$ : choisir $u^k$ parmi les observations restantes, avec une probabilité proportionnelle au carré de la distance au **centroïde déjà choisi le plus proche**.'
+              ]},
+              {p: 'L’algorithme reste aléatoire, mais évite les **pires** solutions.'}
+            ]}},
+            {table: {head: ['Point', 'A', 'B', 'C', 'D', 'E', 'F'], rows: [
+              ['$x_1$', '1', '1', '2', '8', '8', '9'], ['$x_2$', '1', '2', '1', '8', '9', '8']]}},
+            {p: 'On cherche $K=2$ clusters.'},
+            {ol: [
+              'Représenter les données. Quels clusters semblent naturels ?',
+              'Initialisation standard : donner un choix possible de deux centroïdes initiaux parmi les points, effectuer une itération complète (affectation puis mise à jour) et calculer l’inertie.',
+              'K-means++ : le premier centroïde est $A$. Calculer $d^2$ de chaque point à $A$, puis la probabilité de chaque point d’être choisi comme second centroïde. Lequel a la plus forte probabilité ? Pourquoi ?',
+              'Comparer les deux initialisations : impact sur la vitesse de convergence et sur la qualité finale ?',
+              'Pourquoi K-means++ ne rend-il pas l’algorithme déterministe ?'
+            ]},
+            {cell: {id: 'td3kmeans', code: String.raw`import numpy as np
+
+points = {"A": (1, 1), "B": (1, 2), "C": (2, 1), "D": (8, 8), "E": (8, 9), "F": (9, 8)}
+noms = list(points)
+X = np.array(list(points.values()), dtype=float)
+
+def une_iteration(centres):
+    d2 = ((X[:, None, :] - centres[None, :, :]) ** 2).sum(axis=2)
+    groupe = d2.argmin(axis=1)                                         # affectation
+    nouveaux = np.array([X[groupe == j].mean(axis=0) for j in range(len(centres))])  # mise à jour
+    inertie = ((X - nouveaux[groupe]) ** 2).sum()
+    return groupe, nouveaux, inertie
+
+groupe, nouveaux, inertie = une_iteration(X[[0, 1]])                 # départ : A et B
+for j in range(2):
+    print(f"groupe {j + 1} : {[noms[i] for i in range(6) if groupe[i] == j]}  centre {nouveaux[j].tolist()}")
+print("inertie :", inertie)
+
+d2 = ((X - X[0]) ** 2).sum(axis=1)                                   # K-means++, premier centre : A
+for nom, v, pr in zip(noms, d2, d2 / d2.sum()):
+    print(f"{nom} : d² = {v:5.0f}   probabilité = {pr:.3f}")`, expected: "groupe 1 : ['A', 'C']  centre [1.5, 1.0]\ngroupe 2 : ['B', 'D', 'E', 'F']  centre [6.5, 6.75]\ninertie : 72.25\nA : d² =     0   probabilité = 0.000\nB : d² =     1   probabilité = 0.003\nC : d² =     1   probabilité = 0.003\nD : d² =    98   probabilité = 0.301\nE : d² =   113   probabilité = 0.347\nF : d² =   113   probabilité = 0.347"}},
+            {p: 'Changez `X[[0, 1]]` (A et B) pour tester d’autres départs.'}
+          ],
+          hint: [{p: '$d^2(D,A)=7^2+7^2=98$. Probabilité de B : $1/326$.'}]}
+      ]
     }
   };
 
@@ -650,7 +956,7 @@ tests(heures, residus)`, expected: 'Shapiro-Wilk (normalité) : p = 0.609\nBreus
     // Corrigé local : les solutions n'existent que dans la copie de l'enseignante (retirées à la publication).
     const hasCorr = sheet.exercises.some(ex => ex.solution?.length || ex.parts.some(p => p.cell && p.cell.solution));
     el.innerHTML =
-      '<p class="lesson-meta td-meta"><span>' + sheet.duration + '</span>' + (hasCorr ? '<button type="button" class="tool-button td-corr-toggle" aria-pressed="false">📘 Corrigé (enseignante, local)</button>' : '') + '<button type="button" class="tool-button" data-notebook>' + window.CourseIcons.icon('download') + 'Notebook .ipynb</button><a class="tool-button" href="originaux/td1-2-2025-2026.pdf" download>' + window.CourseIcons.icon('download') + 'Ancien sujet 2025–2026 (PDF)</a></p>' +
+      '<p class="lesson-meta td-meta"><span>' + sheet.duration + '</span>' + (hasCorr ? '<button type="button" class="tool-button td-corr-toggle" aria-pressed="false">📘 Corrigé (enseignante, local)</button>' : '') + '<button type="button" class="tool-button" data-notebook>' + window.CourseIcons.icon('download') + 'Notebook .ipynb</button>' + (sheet.original === false ? '' : '<a class="tool-button" href="originaux/td1-2-2025-2026.pdf" download>' + window.CourseIcons.icon('download') + 'Ancien sujet 2025–2026 (PDF)</a>') + '</p>' +
       '<nav class="td-index" aria-label="Exercices">' + sheet.exercises.map(ex => '<a href="#exercice-' + ex.n + '" data-jump data-status="' + (marks[chapter.id + '#' + ex.n] || 'todo') + '"><span class="td-number">' + (ex.label || 'Exercice ' + ex.n) + '</span><span class="td-index-title">' + inline(ex.title) + '</span><span class="td-index-status">' + statusLabel[marks[chapter.id + '#' + ex.n] || 'todo'] + '</span></a>').join('') + '</nav>' +
       '<details class="td-setup"><summary>Comment exécuter le code ?</summary><div class="td-setup-grid"><div><h3>Dans la page</h3><p>« Exécuter » lance la cellule et celles qui la précèdent dans l’exercice. La première exécution charge Python puis les bibliothèques nécessaires ; elle demande une connexion Internet. Maj + Entrée exécute aussi la cellule. Tab indente ; Maj + Tab, ou Échap puis Tab, permet de quitter le code. Modifier une cellule impose de réexécuter les suivantes.</p></div><div><h3>Sur votre machine</h3><p>Téléchargez le notebook du TD, puis :</p><pre class="td-shell">pip install jupyter scikit-learn matplotlib pandas\njupyter notebook ' + escape(sheet.notebook) + '</pre></div></div></details>' +
       sheet.exercises.map(ex => exerciseHTML(ex, chapter, marks)).join('') +

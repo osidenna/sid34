@@ -1,0 +1,38 @@
+/* Chapitre 3 : petits compléments aux récits (animal-stories.css). */
+.nl-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.nl-thumbs { display: grid; gap: 8px; margin-top: 4px; max-width: 150px; }
+@media screen and (min-width: 961px) { .tree-story .as-figure, .rbf-story .as-figure { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.nl-thumbs figure { margin: 0; }
+.nl-thumbs svg { width: 100%; height: auto; display: block; }
+.nl-thumbs figcaption { font-size: 11px; line-height: 1.25; color: var(--ink-2, #464d5c); margin-top: 4px; }
+.nl-digit { width: 104px; height: 104px; display: block; border: 1px solid var(--line, #e5e7eb); shape-rendering: crispEdges; }
+.nl-tsne .ts-pt { font: 700 11px/1 var(--sans, Roboto, sans-serif); transition: transform .8s ease, fill .4s; pointer-events: auto; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .nl-tsne .ts-pt { transition: none; } }
+.nl-grid { table-layout: fixed; }
+.nl-grid th, .nl-grid td { padding: 1px; text-align: center; font-size: 12px; border: 0; }
+.nl-cell { width: 100%; padding: 4px 0; border: 2px solid transparent; border-radius: 4px; background: rgba(46, 107, 79, calc(var(--v, 0) * .55)); font: inherit; font-variant-numeric: tabular-nums; cursor: pointer; }
+.nl-cell.is-best { font-weight: 800; }
+.nl-cell.is-on { border-color: #1d2433; }
+.nl-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+
+/* ACP en grande dimension (acp-story.js). */
+.ad-story { display: block; width: 100%; height: auto; }
+.ad-story .ad-pt { transition: transform .7s ease, opacity .35s, fill .35s; }
+.ad-story.ad-live .ad-pt { transition: opacity .35s, fill .35s; }
+.ad-lab { font: 700 13px/1 var(--sans, Roboto, sans-serif); paint-order: stroke; stroke: #fff; stroke-width: 3px; }
+.ad-cell { font: 500 14px/1 var(--sans, Roboto, sans-serif); font-variant-numeric: tabular-nums; }
+.ad-glyph { font: 700 12px/1 var(--sans, Roboto, sans-serif); }
+.ad-glyph-s { font: 700 9.5px/1 var(--sans, Roboto, sans-serif); }
+.ad-code { margin: 0 0 12px; padding: 10px 12px; background: #f6f6f7; border: 1px solid var(--line, #e5e7eb); border-radius: 6px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+.ad-pair, .ad-axes { display: flex; flex-wrap: wrap; gap: 10px; max-width: none; }
+.ad-pair .nl-digit, .ad-axes .nl-digit { width: 84px; height: 84px; }
+@media (prefers-reduced-motion: reduce) { .ad-story .ad-pt { transition: none; } }
+@media print { .ad-story .ad-pt { transition: none; } }
+.pca-story .as-side-figure { max-width: 300px; }
+.nl-node { margin-bottom: 12px; }
+.nl-node-head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; margin-bottom: 4px; }
+.nl-node-head span { color: var(--ink-2, #464d5c); }
+.nl-mix { display: flex; height: 10px; border-radius: 3px; overflow: hidden; background: var(--line, #e5e7eb); }
+.nl-mix i { display: block; }
+.nl-node p, .nl-calc { margin: 6px 0 0; font-size: 14px; }
+.nl-gains svg + svg { margin-top: 6px; }

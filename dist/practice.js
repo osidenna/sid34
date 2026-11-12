@@ -87,7 +87,7 @@
   ];
 
   function feedbackHTML(good, title, html, extra = '') {
-    return '<span class="as-fb-mascot">' + mascot(good ? 'cat' : 'ghost') + '</span><div><strong>' + title + '</strong><p>' + html + '</p>' + extra + '</div>';
+    return '<span class="as-fb-mascot">' + mascot(good ? 'cat' : 'ghost') + '</span><div><strong>' + title + '</strong>' + (html ? '<p>' + html + '</p>' : '') + extra + '</div>';
   }
   function showFeedback(box, good, title, html, extra) {
     box.className = 'as-predict-feedback ' + (good ? 'is-good' : 'is-bad'); box.innerHTML = feedbackHTML(good, title, html, extra); box.hidden = false; render(box);
@@ -227,16 +227,41 @@
   // Chapitre 2 en cinq parties (chapter2-plan.js).
   CHECKS.modeles = CHECKS.supervises;
   CHECKS.acp = [
-    q('Que maximise le premier axe de l’ACP ?', [ok('La variance des projections'), no('Le nombre d’erreurs de classification', 'L’ACP n’utilise aucune étiquette : il n’y a pas d’erreur à compter.'), no('La distance au point le plus proche', 'Ça, c’est la marge du SVM.')]),
-    q(String.raw`Valeurs propres \(\lambda_1=3\), \(\lambda_2=1\) : quelle part de variance garde l’axe 1 ?`, [ok('75 %'), no('3 %', String.raw`On divise par la somme : \(3/(3+1)\).`), no('100 %', String.raw`L’axe 2 garde encore \(1/4\) de la variance.`)])
+    q('Que maximise le premier axe de l’ACP ?', [ok('La variance des projections'), no('Le nombre d’erreurs de classification', 'L’ACP n’utilise aucune étiquette : il n’y a pas d’erreur à compter.'), no('La distance au point le plus proche', 'Ça, c’est la marge du SVM.')], 'Plus l’ombre du nuage sur l’axe est large, plus on garde de variance.'),
+    q(String.raw`Valeurs propres \(\lambda_1=3\), \(\lambda_2=1\) : quelle part de variance garde l’axe 1 ?`, [ok('75 %'), no('3 %', String.raw`On divise par la somme : \(3/(3+1)\).`), no('100 %', String.raw`L’axe 2 garde encore \(1/4\) de la variance.`)], String.raw`\(\dfrac{3}{3+1}=75\,\%\).`)
   ];
   CHECKS['svm-marge'] = [CHECKS['svm-geometrie'][1], CHECKS['marge-dure'][1]];
+  // Chapitre 3.
+  CHECKS.pourquoi = [
+    q('Pourquoi une droite échoue-t-elle quand les chats sont au milieu et les chiens autour ?', [ok('Elle n’a que deux côtés : elle ne peut pas entourer une région'), no('Elle manque de données', 'Même avec plus d’animaux, une droite garde deux côtés.'), no('Elle est mal entraînée', 'La meilleure droite possible plafonne aussi.')]),
+    q('Lequel de ces modèles est non paramétrique ?', [ok('k-NN'), no('Régression logistique', 'Elle apprend un nombre fixe de coefficients.'), no('SVM linéaire', String.raw`Il se résume à \(w\) et \(b\).`)])
+  ];
+  CHECKS.arbres = [
+    q('Un nœud contient 4 chats et 4 chiens. Que vaut son impureté de Gini ?', [ok('0,5'), no('0', 'Une impureté nulle correspond à un nœud pur.'), no('1', String.raw`Elle vaut \(2p(1-p)\), au plus \(0{,}5\) avec deux classes.`)]),
+    q('Un arbre très profond a 100 % en apprentissage et 72 % en validation. Que faire ?', [ok('Le rendre moins profond ou l’élaguer'), no('Le rendre plus profond', 'La variance est déjà trop élevée.'), no('Rien : 100 % est le meilleur score possible', 'Ce score mesure surtout la mémorisation des données.')])
+  ];
+  CHECKS.voisins = [
+    q(String.raw`Que se passe-t-il quand \(k\) devient très grand ?`, [ok('La frontière se lisse et le biais augmente'), no('La variance augmente', 'C’est le cas à petit k : la frontière suit chaque point.'), no('Le score d’apprentissage atteint 100 %', 'C’est à k = 1 que cela arrive.')]),
+    q('Pourquoi standardiser les variables avant un k-NN ?', [ok('Sinon la variable de plus grande échelle domine la distance'), no('Pour accélérer le vote', 'Le coût reste le même.'), no('Pour obtenir des distances positives', 'Une distance est toujours positive.')])
+  ];
+  CHECKS.noyaux = [
+    q(String.raw`Que permet l’astuce du noyau ?`, [ok(String.raw`Calculer \(\langle\phi(x),\phi(x')\rangle\) sans calculer \(\phi\)`), no('Supprimer le paramètre C', 'C reste, et le noyau ajoute souvent ses propres réglages.'), no('Rendre le problème non convexe', 'Le dual reste convexe.')]),
+    q(String.raw`Noyau RBF : 100 % en apprentissage, score faible en validation. Quel réglage essayer ?`, [ok(String.raw`Diminuer \(\gamma\)`), no(String.raw`Augmenter \(\gamma\)`, 'L’influence de chaque point deviendrait encore plus locale.'), no(String.raw`Augmenter \(C\)`, 'Les erreurs coûteraient encore plus cher : la frontière se plierait davantage.')])
+  ];
+  CHECKS.kmeans = [
+    q('Quelles sont les deux étapes répétées par k-means ?', [ok('Affecter les points, recalculer les centroïdes'), no('Couper un nœud, élaguer', 'Ce sont les étapes d’un arbre.'), no('Voter, puis mesurer une marge', 'k-means n’a pas d’étiquettes.')]),
+    q('Deux exécutions de k-means donnent deux WCSS différentes. Pourquoi ?', [ok('Le départ aléatoire peut mener à un minimum local différent'), no('L’algorithme n’a pas convergé', 'Il peut avoir convergé dans les deux cas.'), no('Les données ont changé', 'Les données sont les mêmes.')])
+  ];
+  CHECKS.tsne = [
+    q('Que cherche à conserver t-SNE ?', [ok('Les voisinages locaux'), no('La variance totale', 'C’est l’objectif de l’ACP.'), no('Les distances entre amas', 'Elles ne sont justement pas fiables.')]),
+    q('Peut-on conclure que deux amas très éloignés sur une carte t-SNE sont très différents ?', [ok('Non : la distance entre amas ne s’interprète pas'), no('Oui, plus ils sont loin, plus ils diffèrent', 'Changez le tirage : leur position change.'), no('Oui, à condition que la perplexité soit grande', 'Même alors, on reste prudent.')])
+  ];
 
   function check(host, chapter, lesson) {
     const own = CHECKS[lesson.id];
     if (!host || !own) return;
     // Révision espacée : la question nouvelle d'une partie située deux parties plus tôt.
-    const all = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2].filter(Boolean).flatMap(c => c.lessons);
+    const all = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2, window.SID34_CHAPTER_3].filter(Boolean).flatMap(c => c.lessons);
     const at = all.findIndex(l => l.id === lesson.id), backLesson = at >= 2 ? all[at - 2] : null, back = backLesson?.id;
     // Ordre des choix mélangé de façon stable (la bonne réponse n'est pas toujours A).
     const shuffle = x => { const n = x.choices.length, r = [...x.prompt].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 9973, 7) % n; return {...x, choices: x.choices.map((_, k) => x.choices[(k + r) % n])}; };

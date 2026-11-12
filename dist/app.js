@@ -1,14 +1,14 @@
 (function () {
   'use strict';
 
-  const chapters = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2].filter(Boolean);
+  const chapters = [window.SID34_CHAPTER_1, window.SID34_CHAPTER_2, window.SID34_CHAPTER_3].filter(Boolean);
   // Chapitres publiés et chapitres annoncés « à venir » (copie étudiants : chapitre 2 sans contenu).
   const ready = chapters.filter(chapter => !chapter.comingSoon), soon = chapters.filter(chapter => chapter.comingSoon);
   // Date de la séance de chaque chapitre annoncé (sinon « À venir »).
   const SESSION_DATES = {'02': '22 octobre', '03': '5 novembre', '04': '12 novembre', '05': '10 décembre'};
   const soonBadge = chapter => '<span class="soon-badge">' + (SESSION_DATES[chapter.number] || 'À venir') + '</span>';
   // Chapitres suivants du programme, annoncés dans le menu et le plan.
-  const announced = [...soon, {number: '03', title: 'Algorithmes non linéaires'}, {number: '04', title: 'Agrégation'}, {number: '05', title: 'Cycle ML & Métriques d’évaluation'}];
+  const announced = [...soon, {number: '04', title: 'Agrégation'}, {number: '05', title: 'Cycle ML & Métriques d’évaluation'}];
   const main = document.getElementById('main');
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebar-backdrop');
@@ -28,7 +28,7 @@
   let tdTarget = '';
   const imageViewer = document.getElementById('image-viewer');
   const icon=(name)=>window.CourseIcons.icon(name);
-  const storyNames = {'svm-story':'SVMStory','regression-story':'RegressionStory','split-story':'SplitStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory'};
+  const storyNames = {'svm-story':'SVMStory','regression-story':'RegressionStory','split-story':'SplitStory','logistic-story':'LogisticStory','animal-split-story':'AnimalSplitStory','logit-svm-story':'LogitSVMStory','bias-variance-story':'BiasVarianceStory','cv-story':'CVStory','multiclass-story':'MulticlassStory','linearity-story':'LinearityStory','linlog-story':'LinLogStory','pca-story':'PCAStory','acp-images-story':'ACPImagesStory','bce-story':'BCEStory','supervise-story':'SuperviseStory','loss-story':'LossStory','risk-story':'RiskStory','geometrie-story':'GeometryStory','distance-story':'DistanceStory','slack-story':'SlackStory','dual-story':'DualStory','nl-why-story':'NLWhyStory','tree-story':'TreeStory','tree-reg-story':'TreeRegStory','knn-story':'KnnStory','lift-story':'LiftStory','rbf-story':'RBFStory','kmeans-story':'KMeansStory','tsne-story':'TSNEStory'};
   const plain = value => window.SID34Math ? window.SID34Math.plain(value) : String(value || '');
   const mathIn = root => { if (window.SID34Math) window.SID34Math.render(root); return root; };
   const mathLive = root => { if (window.SID34Math) { window.SID34Math.render(root); window.SID34Math.observe(root); } return root; };
@@ -157,7 +157,7 @@
       if (anatomy) window.SID34Teaching.renderAnatomy(section, math, anatomy);
       const explanation = document.createElement('p');
       explanation.textContent = block.explanation || '';
-      const note = document.createElement('details'); note.className = 'formula-note'; note.innerHTML = '<summary>Lire la formule</summary>'; note.appendChild(explanation); section.appendChild(note);
+      if (block.explanation) { const note = document.createElement('details'); note.className = 'formula-note'; note.innerHTML = '<summary>Lire la formule</summary>'; note.appendChild(explanation); section.appendChild(note); }
     } else if (block.type === 'demo') {
       section.innerHTML = (block.title ? '<h2>' + escape(block.title) + '</h2>' : '') + '<div class="demo-host" data-demo-kind="' + escape(block.kind) + '"></div>' + (block.caption ? '<p class="demo-caption">' + escape(block.caption) + '</p>' : '');
       const host = section.querySelector('.demo-host');
@@ -305,7 +305,7 @@
     const teaching = window.SID34Teaching;
     const quizCount = teaching ? teaching.pitfallCount(key) : 0;
     const extras = lesson.slides.filter(slide => slide.extra);
-    const planItems = lesson.slides.filter(slide => !slide.extra).map(slide => '<li><button type="button" data-plan="' + escape(slide.id) + '"><span class="plan-n' + (slide.fresh ? ' plan-fresh' : '') + '">' + (slide.fresh ? 'N' : String(slide.number).padStart(2, '0')) + '</span><span>' + escape(slide.title) + '</span></button></li>').join('') +
+    const planItems = lesson.slides.filter(slide => !slide.extra).map(slide => '<li><button type="button" data-plan="' + escape(slide.id) + '"><span class="plan-n' + (slide.fresh ? ' plan-fresh' : '') + '">' + (slide.fresh ? 'N' : slide.number == null ? '' : String(slide.number).padStart(2, '0')) + '</span><span>' + escape(slide.title) + '</span></button></li>').join('') +
       (extras.length ? '<li><button type="button" data-plan="complements"><span class="plan-n plan-extra">+</span><span>Expériences et approfondissements</span></button></li>' : '') +
       (quizCount ? '<li><button type="button" data-plan="pieges"><span class="plan-n plan-quiz">' + quizCount + '</span><span>Pièges à éviter</span></button></li>' : '');
     const prevCard = previous
@@ -391,7 +391,7 @@
 
   function renderResources() {
     current = null; document.title = 'Ressources · Apprentissage statistique';
-    const originals = ready.map(chapter => ({label: 'Support original 2025–2026 · Chapitre ' + chapter.number, url: 'originaux/lecture' + Number(chapter.number) + '-2025-2026.pdf'}));
+    const originals = ready.filter(chapter => chapter.number !== '03').map(chapter => ({label: 'Support original 2025–2026 · Chapitre ' + chapter.number, url: 'originaux/lecture' + Number(chapter.number) + '-2025-2026.pdf'}));
     const bibliography = [{label:'Bibliographie complète · chapitre 1',url:'#fondements/categorisation'}, ...chapters[0].lessons.flatMap(lesson => lesson.blocks.filter(block => block.type === 'references').flatMap(block => block.links))];
     const groups = [
       
